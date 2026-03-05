@@ -17,7 +17,7 @@ Die nötigen SMD- und THT-Bauteile bekommst du problemlos und günstig bei Shops
 
 **Wichtige Löthinweise:**
 1. **Thermik:** Achte darauf, dass das untere Pad (Exposed Pad) des TPA3110D2-Chips gut mit den Thermal-Vias auf der Platine verlötet ist.
-2. **GND-Jumper (H4):** Schließe den Jumper an H4, um die saubere Elektronik-Masse mit der Power-Masse zu verbinden (Star-Ground Konzept für rauschfreien Sound).
+2. **GND-Jumper (GNDC):** Schließe den Jumper an H4, um die saubere Elektronik-Masse mit der Power-Masse zu verbinden (Star-Ground Konzept für rauschfreien Sound).
 3. **Terminierung:** Die 22-Ohm-Widerstände sitzen absichtlich extrem nah an den GPIOs der ESPs. Vergiss diese nicht, sie verhindern Audio-Verzerrungen auf dem I2S-Bus!
 
 ---
@@ -102,3 +102,4 @@ Der S3 steuert LEDs, Lüfter, Home Assistant Streams und den Hardware-Multiplexe
 ## ⚖️ Lizenz
 Dieses komplette Projekt (Hardware und Software) steht unter der [CC BY-NC-SA 4.0 Lizenz](https://creativecommons.org/licenses/by-nc-sa/4.0/). 
 Das bedeutet: Nachbauen und Anpassen für private Zwecke ist ausdrücklich erwünscht, jede kommerzielle Nutzung oder der Verkauf sind strikt verboten!
+
