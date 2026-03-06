@@ -18,7 +18,7 @@ Bitte melde **sicherheitsrelevante Bugs oder Schwachstellen niemals öffentlich*
 
 Wenn du eine kritische Schwachstelle gefunden hast (z. B. Umgehung der OTA-Passwörter, WLAN-Exploits oder unbefugter Zugriff auf den ESP32-S3 / D1 Mini):
 
-1. Sende mir bitte direkt eine vertrauliche E-Mail an: **[DEINE E-MAIL-ADRESSE HIER EINTRAGEN]**
+1. Sende mir bitte direkt eine vertrauliche E-Mail an: christopher.dohmen@insane-screen-gamer.de
 2. Beschreibe die Lücke so detailliert wie möglich (welcher ESP ist betroffen, welche ESPHome-Version, wie lässt sich der Fehler reproduzieren).
 3. Ich werde den Eingang deiner Meldung innerhalb von 48 Stunden bestätigen.
 4. Wir arbeiten dann gemeinsam an einem Patch und veröffentlichen diesen, bevor die Lücke öffentlich dokumentiert wird.
