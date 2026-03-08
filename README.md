@@ -111,7 +111,9 @@ Das bedeutet: Nachbauen und Anpassen für private Zwecke ist ausdrücklich erwü
 ## ☕ Support dieses Projekts
 V5 hat extrem viel Zeit, Nerven und Kaffee gekostet. Wenn dir das System gefällt und du meine Arbeit unterstützen möchtest, freue ich mich riesig über einen virtuellen Kaffee!
 
-[![Donate mit PayPal](https://img.shields.io/badge/Donate-PayPal-blue.svg?style=for-the-badge&logo=paypal)]([https://www.paypal.me/deinname](https://www.paypal.me/babeinlovexd))
+<a href="https://www.paypal.me/babeinlovexd">
+  <img src="https://img.shields.io/badge/Donate-PayPal-blue.svg?style=for-the-badge&logo=paypal" alt="Donate mit PayPal">
+</a>
 
 Jeder Cent fließt direkt in die Entwicklung von V6 und neue Prototypen! 🚀
 ---
@@ -122,6 +124,7 @@ Jeder Cent fließt direkt in die Entwicklung von V6 und neue Prototypen! 🚀
 | :---: |
 
 ---
+
 
 
 
