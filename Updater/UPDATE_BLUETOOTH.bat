@@ -17,6 +17,7 @@ echo =======================================================
 echo.
 
 set "FIRMWARE_FILE="
+:: Suche zuerst lokal nach irgendeiner *.merged.bin
 for %%f in (*merged.bin) do (
     set "FIRMWARE_FILE=%%f"
     goto :FileFound
@@ -24,14 +25,23 @@ for %%f in (*merged.bin) do (
 
 :FileFound
 if "%FIRMWARE_FILE%"=="" (
-    color 0c
-    echo [FEHLER] Keine '.merged.bin' Datei gefunden!
-    echo Bitte lege die kompilierte Firmware in denselben Ordner wie dieses Skript.
-    echo.
-    echo INFO: Aktueller Such-Ordner ist: %CD%
-    echo.
-    pause
-    exit /b
+    echo [INFO] Keine lokale Datei gefunden.
+    echo [INFO] Suche auf GitHub nach Updates...
+    
+    :: Nutzt PowerShell mit User-Agent, um die GitHub-API nach *.merged.bin zu durchsuchen
+    powershell -NoProfile -Command "$ErrorActionPreference = 'Stop'; $ua = 'Mozilla/5.0'; $repoUrl = 'https://api.github.com/repos/babeinlovexd/insane-sound-system/contents/Firmware?ref=V5-dev'; try { $files = Invoke-RestMethod -Uri $repoUrl -UserAgent $ua; $target = $files | Where-Object { $_.name -like '*merged.bin' } | Select-Object -First 1; if ($target) { Write-Host ('[OK] Gefunden auf GitHub: ' + $target.name); Invoke-WebRequest -Uri $target.download_url -OutFile $target.name -UserAgent $ua; $target.name | Out-File -FilePath 'temp_name.txt' -Encoding ascii; } else { exit 1 } } catch { exit 1 }"
+
+    if errorlevel 1 (
+        color 0c
+        echo.
+        echo [FEHLER] Konnte keine Firmware auf GitHub oder lokal finden!
+        pause
+        exit /b
+    )
+    
+    :: Den gefundenen Namen einlesen
+    set /p FIRMWARE_FILE=<temp_name.txt
+    del temp_name.txt
 )
 
 echo [INFO] Firmware-Datei gefunden: %FIRMWARE_FILE%

@@ -41,7 +41,7 @@
 # [STROMVERSORGUNG & SYSTEM (SMD 1206)]
 # - 3V3 Pin          : Power In           <- Von AMS1117-3.3 (mit 10µF & 100nF Kerkos)
 # - GND Pins         : Masse              -> An Ground-Plane (Bodenpad zwingend verlöten!)
-# - EN Pin           : Reset-Logik        <- Von S3 GPIO 38 (via 1k Ohm) 
+# - EN Pin           : Reset-Logik        <- Von S3 GPIO 7 (via 1k Ohm) 
 #                                            (+ 10k Pull-Up zu 3.3V & 1µF Kerko zu GND)
 # - IO0 (GPIO 0)     : Flash-Trigger      <- Von S3 GPIO 39 (via 1k Ohm) 
 #                                            (+ 10k Pull-Up zu 3.3V)
