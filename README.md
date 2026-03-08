@@ -4,7 +4,7 @@ Willkommen beim **Insane Sound System V5** – dem ultimativen, smarten High-End
 
 Diese Version wurde von Grund auf neu entwickelt. Das Ziel: Maximale Audio-Leistung, idiotensichere Bedienung und ein Hardware-Design, das sich professionell fertigen und trotzdem völlig entspannt zu Hause zusammenbauen lässt.
 
-![Insane Sound System V5 - 3D Ansicht (EasyEDA)](Images/Screenshot 2026-03-08 095938.png)
+<img src="Images/3.png" width="400" alt="Insane Sound System V5 - 3D Render">
 
 ## ✨ Was ist neu in V5? (Hardware & Features)
 
@@ -17,7 +17,7 @@ Wir haben keine halben Sachen gemacht. V5 bringt massive Upgrades unter der Haub
 * **Smartes Temperatur-Management:** Drei TMP102-Sensoren überwachen den Verstärker (TPA3110), die Spannungsregler und die ESP32-Umgebung. Ein 5V-Gehäuselüfter wird stufenlos per PWM gesteuert, sobald es im Gehäuse warm wird.
 * **Over-The-Air Bluetooth Updates:** Das WROOM-Modul kann jetzt komplett drahtlos über WLAN geflasht werden. Kein USB-Kabel, kein Schrauben – einfach per Knopfdruck im Dashboard!
 
-![Platinen Layout 2D (EasyEDA)](Images/Screenshot 2026-03-08 100002.png)
+<img src="Images/1.png" width="400" alt="Platinen Layout 2D Ansicht">
 
 ---
 
@@ -54,7 +54,7 @@ Aus Sicherheitsgründen nutzt dieses Projekt ausgelagerte Passwörter.
 3. Lade die Datei `insane-sound-system.yaml` aus dem Ordner `ESPHome/` in dein ESPHome-Dashboard hoch.
 4. Schließe den **ESP32-S3** per USB an deinen Rechner an und flashe ihn das allererste Mal ganz normal über das Kabel.
 
-![PCB Routing Ansicht (EasyEDA)](Images/Screenshot 2026-03-08 100110.png)
+<img src="Images/2.png" width="300" alt="Detailansicht 3D Komponenten">
 
 ### Schritt 3: Das Bluetooth-Modul flashen (OTA via WLAN)
 Sobald dein System läuft und im Netzwerk erreichbar ist, flashen wir den zweiten Chip (den ESP32-WROOM) einfach drahtlos!
@@ -83,4 +83,4 @@ Sobald dein System läuft und im Netzwerk erreichbar ist, flashen wir den zweite
 
 **Glückwunsch! Dein Insane Sound System V5 ist jetzt voll einsatzbereit!**
 
-![Fertiges Board 3D Render (EasyEDA)](Images/Screenshot 2026-03-08 100147.png)
+<img src="Images/5.png" width="800" alt="Finales 3D Rendering">
