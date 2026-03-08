@@ -84,3 +84,18 @@ Sobald dein System läuft und im Netzwerk erreichbar ist, flashen wir den zweite
 **Glückwunsch! Dein Insane Sound System V5 ist jetzt voll einsatzbereit!**
 
 <img src="Images/5.png" width="800" alt="Finales 3D Rendering">
+
+---
+
+## ⚖️ Lizenz
+Dieses komplette Projekt (Hardware und Software) steht unter der [CC BY-NC-SA 4.0 Lizenz](https://creativecommons.org/licenses/by-nc-sa/4.0/). 
+Das bedeutet: Nachbauen und Anpassen für private Zwecke ist ausdrücklich erwünscht, jede kommerzielle Nutzung oder der Verkauf sind strikt verboten!
+
+---
+
+## 👨‍💻 Entwickelt von
+
+| [<img src="https://avatars.githubusercontent.com/u/43302033?v=4" width="100"><br><sub>**Christopher**</sub>](https://github.com/babeinlovexd) |
+| :---: |
+
+---
