@@ -17,7 +17,7 @@ Wir haben keine halben Sachen gemacht. V5 bringt massive Upgrades unter der Haub
 * **Smartes Temperatur-Management:** Drei TMP102-Sensoren überwachen den Verstärker (TPA3110), die Spannungsregler und die ESP32-Umgebung. Ein 5V-Gehäuselüfter wird stufenlos per PWM gesteuert, sobald es im Gehäuse warm wird.
 * **Over-The-Air Bluetooth Updates:** Das WROOM-Modul kann jetzt komplett drahtlos über WLAN geflasht werden. Kein USB-Kabel, kein Schrauben – einfach per Knopfdruck im Dashboard!
 
-![Platinen Layout 2D (EasyEDA)](Images/Screenshot 2026-03-08 100002.png)
+![Platinen Layout 2D (EasyEDA)](Images/Screenshot 2026-03-08 095938.png)
 
 ---
 
@@ -82,5 +82,6 @@ Sobald dein System läuft und im Netzwerk erreichbar ist, flashen wir den zweite
 3. Stecke das System wieder ein. 
 
 **Glückwunsch! Dein Insane Sound System V5 ist jetzt voll einsatzbereit!**
+
 
 ![Fertiges Board 3D Render (EasyEDA)](Images/Screenshot 2026-03-08 100147.png)
