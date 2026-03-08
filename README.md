@@ -83,7 +83,7 @@ Sobald dein System läuft und im Netzwerk erreichbar ist, flashen wir den zweite
    * Führe sie per Doppelklick aus.
 
    **🍎/🐧 Für Mac- & Linux-Nutzer:**
-   * Lade die `update_bluetooth.sh` aus dem Ordner `Updater/Linux_Mac` herunter.
+   * Lade die `update_bluetooth.sh` aus dem Ordner `Updater/Linux_Mac/` herunter.
    * Öffne ein Terminal, navigiere zur Datei und mache sie ausführbar: `chmod +x update_bluetooth.sh`
    * Starte das Skript mit: `./update_bluetooth.sh`
 
@@ -124,6 +124,7 @@ Jeder Cent fließt direkt in die Entwicklung von V6 und neue Prototypen! 🚀
 | :---: |
 
 ---
+
 
 
 
