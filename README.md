@@ -2,6 +2,21 @@
 
 Willkommen beim **Insane Sound System V5** – dem ultimativen, smarten High-End WLAN & Bluetooth Lautsprecher-Controller!
 
+Monatelange Entwicklung, unzählige Prototypen, Schweiß, Tränen und der unbändige Wille, die absolut perfekte Audio-Zentrale zu erschaffen, sind in diese Platine geflossen. Das **Insane Sound System V5** ist das ultimative Resultat dieses Wahnsinns. 
+
+**Was ist das Insane Sound System überhaupt?**
+Es ist nicht einfach nur ein Verstärker-Board. Es ist das kompromisslose, smarte Herzstück für deine selbstgebaute High-End-Audiobox. Es verbindet audiophile Hardware mit der unendlichen Flexibilität von Smart Homes und gibt dir die absolute Kontrolle über Sound, Licht und Hardware – alles auf einer winzigen, professionellen 100x100mm Platine.
+
+### 🔥 Was kann das Teil ALLES?
+Dieses Board ist bis unter die Zähne bewaffnet mit Features:
+* **Nahtlose Dual-Audio-Quellen:** Streame Musik über WLAN (Home Assistant/ESPHome) oder verbinde dein Handy direkt über Bluetooth. Ein dedizierter Hardware-Multiplexer schaltet verlustfrei und absolut knackfrei zwischen den Audioquellen um.
+* **Bluetooth mit Metadaten:** Der Bluetooth-Chip streamt nicht nur Musik, sondern schickt Titel, Interpret, Album und den Play/Pause-Status direkt auf dein Smart-Home-Dashboard.
+* **Insane Turbo Mode:** Zu leise? Ein digital schaltbarer Gain-Boost auf Hardware-Ebene holt die maximale Lautstärke aus dem TPA3110-Verstärker heraus.
+* **3-Zonen RGB-Lichtshow:** Steuere bis zu drei separate 24V WS28xx-LED-Streifen direkt über die Platine (mit integriertem Level-Shifter für saubere 5V-Datensignale). Inklusive Effekten wie "Knight Rider", "Feuerwerk" oder "Regenbogen".
+* **Smartes Thermomanagement:** Drei unabhängige Temperatursensoren (I2C) überwachen Verstärker, Spannungsregler und Gehäusetemperatur. Wird es heiß, regelt das System stufenlos einen 5V-PWM-Gehäuselüfter hoch. Droht der Hitzetod, greift die automatische Notabschaltung.
+* **Vollautomatische Stromspar-Logik:** Der Verstärker und der DAC werden hardwareseitig in den Standby (Mute) geschickt, wenn keine Musik spielt. Kein Grundrauschen, kein unnötiger Stromverbrauch.
+* **Over-The-Air (OTA) Updates für ALLE Chips:** Flashe nicht nur das Hauptsystem über WLAN, sondern – dank unseres massgeschneiderten Auto-Flasher-Tools – auch den abgetrennten Bluetooth-Chip komplett drahtlos über das Netzwerk!
+
 Diese Version wurde von Grund auf neu entwickelt. Das Ziel: Maximale Audio-Leistung, idiotensichere Bedienung und ein Hardware-Design, das sich professionell fertigen und trotzdem völlig entspannt zu Hause zusammenbauen lässt.
 
 <img src="Images/3.png" width="400" alt="Insane Sound System V5 - 3D Render">
@@ -99,3 +114,4 @@ Das bedeutet: Nachbauen und Anpassen für private Zwecke ist ausdrücklich erwü
 | :---: |
 
 ---
+
