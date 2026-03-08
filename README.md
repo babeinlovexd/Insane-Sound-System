@@ -108,10 +108,19 @@ Das bedeutet: Nachbauen und Anpassen für private Zwecke ist ausdrücklich erwü
 
 ---
 
+## ☕ Support dieses Projekts
+V5 hat extrem viel Zeit, Nerven und Kaffee gekostet. Wenn dir das System gefällt und du meine Arbeit unterstützen möchtest, freue ich mich riesig über einen virtuellen Kaffee!
+
+[Hier klicken zum Spenden (PayPal)](https://www.paypal.me/babeinlovexd)
+
+Jeder Cent fließt direkt in die Entwicklung von V6 und neue Prototypen! 🚀
+---
+
 ## 👨‍💻 Entwickelt von
 
 | [<img src="https://avatars.githubusercontent.com/u/43302033?v=4" width="100"><br><sub>**Christopher**</sub>](https://github.com/babeinlovexd) |
 | :---: |
 
 ---
+
 
