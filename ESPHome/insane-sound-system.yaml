@@ -94,6 +94,11 @@ wifi:
     ssid: "Insane-Sound Fallback"
     password: !secret ap_password
 
+# 1. Den WLAN-Tunnel für das Flasher-Tool öffnen
+stream_server:
+  - uart_id: uart_bl
+    port: 8888
+
 web_server:
   port: 80
 
@@ -248,32 +253,31 @@ button:
       - uart.write: "PREV\n"
       
   - platform: template
-    name: "Update Bluetooth Modul"
+    name: "WROOM in Flash-Modus setzen"
     id: flash_wroom_btn
     icon: "mdi:bluetooth-transfer"
     on_press:
-      - logger.log: "Starte Flash-Vorgang für den WROOM..."
-      # 1. WROOM in den Download-Modus zwingen
-      - switch.turn_off: bl_en_pin      # EN auf GND (Reset)
-      - switch.turn_off: bl_io0_pin     # IO0 auf GND (Download Mode)
+      - logger.log: "Bringe WROOM in den Bootloader-Modus..."
+      # Hardware-Reset Sequenz für den WROOM 
+      - switch.turn_off: bl_io0_pin     # IO0 auf LOW (Download Mode)
       - delay: 100ms
-      - switch.turn_on: bl_en_pin       # EN wieder HIGH (Chip startet)
-      - delay: 50ms
-      - switch.turn_on: bl_io0_pin      # IO0 wieder HIGH (Modus eingerastet)
-      
-      - logger.log: "WROOM ist im Flash-Modus. Übertrage Firmware aus dem PSRAM..."
-      
-      # 2. Aufruf der C++ Logik, die die .bin schickt
-      - lambda: |-
-          custom_flasher::write_firmware(id(uart_bl));
-          ESP_LOGI("BL_FLASH", "Simulation: Firmware wird geschrieben...");
-          
-      # 3. WROOM nach dem Flashen neu starten
-      - logger.log: "Flash-Vorgang beendet. Starte WROOM neu..."
-      - switch.turn_off: bl_en_pin
+      - switch.turn_off: bl_en_pin      # Reset auslösen (LOW)
       - delay: 100ms
-      - switch.turn_on: bl_en_pin
-      - logger.log: "WROOM läuft nun mit der neuen Software!"
+      - switch.turn_on: bl_en_pin       # Reset loslassen (WROOM startet im Bootloader)
+      - delay: 500ms
+      - switch.turn_on: bl_io0_pin      # IO0 wieder freigeben (Modus bleibt aktiv)
+      - logger.log: "WROOM bereit! Starte jetzt das .bat-Tool auf deinem PC."
+
+  - platform: template
+    name: "WROOM Normal starten"
+    id: bl_normal_start
+    icon: "mdi:play"
+    on_press:
+      - logger.log: "Starte WROOM normal neu..."
+      - switch.turn_on: bl_io0_pin      # Sicherstellen, dass IO0 HIGH ist 
+      - switch.turn_off: bl_en_pin      # Reset
+      - delay: 100ms
+      - switch.turn_on: bl_en_pin       # Normaler Boot
 
 number:
   - platform: template
