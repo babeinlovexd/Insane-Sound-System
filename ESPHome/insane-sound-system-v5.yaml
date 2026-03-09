@@ -106,13 +106,14 @@ wifi:
   power_save_mode: none
   ssid: !secret wifi_ssid
   password: !secret wifi_password
-  ap:
-    ssid: "Insane-Sound Fallback"
-    password: !secret ap_password
+  fast_connect: true
   on_connect:
     - script.execute: update_status_led
   on_disconnect:
     - script.execute: update_status_led
+  ap:
+    ssid: "Insane-Sound Fallback"
+    password: !secret ap_password
 
 # 1. Den WLAN-Tunnel für das Flasher-Tool öffnen
 stream_server:
