@@ -59,8 +59,8 @@
 # ##############################################################################
 
 esphome:
-  name: insane-sound-system
-  friendly_name: "Insane Sound System"
+  name: insane-sound-system-v5
+  friendly_name: "Insane Sound System V5"
   project:
     name: "babeinlovexd.insane_sound_system"
     version: "5.0"
@@ -70,6 +70,10 @@ esp32:
   variant: esp32s3
   framework:
     type: arduino # Arduino-Framework beibehalten, da NeoPixelBus das braucht!
+  flash_size: 16MB
+
+external_components:
+  - source: github://oxan/esphome-stream-server
 
 psram:
   mode: octal
@@ -148,14 +152,17 @@ media_player:
 # BELEUCHTUNG (WS2811)
 # ##############################################################################
 
+# Wir bleiben ZWINGEND beim Arduino Framework für dein I2S Audio!
+
 light:
-  - platform: neopixelbus
+  - platform: esp32_rmt_led_strip
     name: "Licht Zone 1"
     id: light_1
-    pin: GPIO4  # S3 Pin 4 (Label: GPIO4)
+    pin: GPIO4
     num_leds: 30
-    type: BRG  
-    variant: WS2811
+    chipset: WS2812
+    rgb_order: BRG
+    rmt_symbols: 48    
     effects: &effekte 
       - addressable_rainbow:
           name: "Regenbogen"
@@ -168,29 +175,35 @@ light:
       - addressable_fireworks:
           name: "Feuerwerk"
 
-  - platform: neopixelbus
+  - platform: esp32_rmt_led_strip
     name: "Licht Zone 2"
-    pin: GPIO5  # S3 Pin 5 (Label: GPIO5)
+    id: light_2        
+    pin: GPIO5
     num_leds: 30
-    type: BRG
-    variant: WS2811
+    chipset: WS2812
+    rgb_order: BRG
+    rmt_symbols: 48    
     effects: *effekte
 
-  - platform: neopixelbus
+  - platform: esp32_rmt_led_strip
     name: "Licht Zone 3"
-    pin: GPIO6  # S3 Pin 6 (Label: GPIO6)
+    id: light_3        
+    pin: GPIO6
     num_leds: 30
-    type: BRG
-    variant: WS2811
+    chipset: WS2812
+    rgb_order: BRG
+    rmt_symbols: 48    
     effects: *effekte
-    
-  - platform: neopixelbus
+
+  - platform: esp32_rmt_led_strip
     name: "Mainboard Status LED"
     id: onboard_led
-    pin: GPIO48 
+    pin: GPIO48
     num_leds: 1
-    type: GRB
-    variant: WS2812
+    chipset: WS2812
+    rgb_order: GRB     
+    rmt_symbols: 48    
+    effects: *effekte
 
 # ##############################################################################
 # HARDWARE STEUERUNG (Switches, Buttons & Lüfter)
@@ -200,6 +213,7 @@ switch:
   - platform: gpio
     pin: GPIO10  # S3  (Label: GPIO10)
     name: "Verstärker Power"
+    entity_category: "config"
     id: amp_power
     restore_mode: ALWAYS_OFF 
 
@@ -214,19 +228,21 @@ switch:
     pin: GPIO18  # S3 Pin 11 (Label: GPIO18)
     id: mux_select
     name: "Audio Quelle (Intern)"
-    internal: true # Versteckt in HA, agiert vollautomatisch im Hintergrund
+    entity_category: "diagnostic"
     restore_mode: ALWAYS_ON # ON (HIGH) = B2 Eingang = S3/WLAN aktiv
     
   - platform: gpio
     pin: GPIO07
     id: bl_en_pin
     name: "WROOM EN (Reset)"
+    entity_category: "config"
     restore_mode: ALWAYS_ON # Muss HIGH sein, damit der WROOM normal läuft
 
   - platform: gpio
     pin: GPIO39
     id: bl_io0_pin
     name: "WROOM IO0 (Boot)"
+    entity_category: "config"
     restore_mode: ALWAYS_ON # Muss HIGH sein, außer beim Flashen
 
 button:
@@ -255,6 +271,7 @@ button:
   - platform: template
     name: "WROOM in Flash-Modus setzen"
     id: flash_wroom_btn
+    entity_category: "config"
     icon: "mdi:bluetooth-transfer"
     on_press:
       - logger.log: "Bringe WROOM in den Bootloader-Modus..."
@@ -270,6 +287,7 @@ button:
 
   - platform: template
     name: "WROOM Normal starten"
+    entity_category: "config"
     id: bl_normal_start
     icon: "mdi:play"
     on_press:
@@ -305,6 +323,7 @@ output:
 fan:
   - platform: speed
     output: fan_pwm
+    entity_category: "config"
     name: "Gehäuse Lüfter"
     id: the_fan
 
@@ -319,6 +338,7 @@ binary_sensor:
       mode: INPUT_PULLUP 
     name: "Verstärker Störung"
     id: amp_fault
+    entity_category: "diagnostic"
     device_class: problem
     filters:
       - invert: {}      
