@@ -15,7 +15,7 @@ Dieses Board ist bis unter die Zähne bewaffnet mit Features:
 * **3-Zonen RGB-Lichtshow:** Steuere bis zu drei separate 24V WS28xx-LED-Streifen direkt über die Platine (mit integriertem Level-Shifter für saubere 5V-Datensignale). Inklusive Effekten wie "Knight Rider", "Feuerwerk" oder "Regenbogen".
 * **Smartes Thermomanagement:** Drei unabhängige Temperatursensoren (I2C) überwachen Verstärker, Spannungsregler und Gehäusetemperatur. Wird es heiß, regelt das System stufenlos einen 5V-PWM-Gehäuselüfter hoch. Droht der Hitzetod, greift die automatische Notabschaltung.
 * **Vollautomatische Stromspar-Logik:** Der Verstärker und der DAC werden hardwareseitig in den Standby (Mute) geschickt, wenn keine Musik spielt. Kein Grundrauschen, kein unnötiger Stromverbrauch.
-* **Over-The-Air (OTA) Updates für ALLE Chips:** Flashe nicht nur das Hauptsystem über WLAN, sondern – dank unseres massgeschneiderten Auto-Flasher-Tools – auch den abgetrennten Bluetooth-Chip komplett drahtlos über das Netzwerk!
+* **Over-The-Air (OTA) Updates für ALLE Chips:** Flashe nicht nur das Hauptsystem über WLAN, sondern – dank unseres massgeschneiderten InsaneFLasher – auch den abgetrennten Bluetooth-Chip komplett drahtlos über das Netzwerk!
 
 Diese Version wurde von Grund auf neu entwickelt. Das Ziel: Maximale Audio-Leistung, idiotensichere Bedienung und ein Hardware-Design, das sich professionell fertigen und trotzdem völlig entspannt zu Hause zusammenbauen lässt.
 
@@ -44,7 +44,7 @@ Fast alle Standard-Komponenten (wie die 1206 Widerstände, Kondensatoren, ESP-Mo
 
 ---
 
-## 🛠️ Die idiotensichere Schritt-für-Schritt Anleitung
+## 🛠️ Die Schritt-für-Schritt Anleitung
 
 Jeder kann dieses System bauen. Folge einfach stur diesen Schritten:
 
@@ -66,35 +66,38 @@ Aus Sicherheitsgründen nutzt dieses Projekt ausgelagerte Passwörter.
    wifi_password: "DEIN_WLAN_PASSWORT"
    ap_password: "DEIN_FALLBACK_HOTSPOT_PASSWORT"
    ```
-3. Lade die Datei `insane-sound-system.yaml` aus dem Ordner `ESPHome/` in dein ESPHome-Dashboard hoch.
+3. Lade die Datei `insane-sound-system-vX.yaml` aus dem Ordner `ESPHome/` in dein ESPHome-Dashboard hoch.
 4. Schließe den **ESP32-S3** per USB an deinen Rechner an und flashe ihn das allererste Mal ganz normal über das Kabel.
 
 <img src="Images/2.png" width="300" alt="Detailansicht 3D Komponenten">
 
-### Schritt 3: Das Bluetooth-Modul flashen (OTA via WLAN)
-Sobald dein System läuft und im Netzwerk erreichbar ist, flashen wir den zweiten Chip (den ESP32-WROOM) einfach drahtlos!
+## 🚀 Das offizielle InsaneFlasher Tool (All-in-One)
 
-1. Öffne dein **Home Assistant Dashboard** und gehe zu den Bedienelementen des Insane Sound Systems.
-2. Klicke auf den Button **"WROOM in Flash-Modus setzen"**. Warte ca. 2 Sekunden. Der WROOM-Chip ist nun bereit.
-3. **Wähle dein Betriebssystem für das Flasher-Tool:**
+Schluss mit komplizierten Kommandozeilen! Das Insane Sound System V5 kommt jetzt mit einem eigenen, professionellen Hub für **Windows, macOS und Linux**.
 
-   **🪟 Für Windows-Nutzer:**
-   * Lade die `UPDATE_BLUETOOTH.bat` aus dem Ordner `Updater/Windows/` herunter.
-   * Führe sie per Doppelklick aus.
+Der **InsaneFlasher** ist dein zentrales Dashboard zur Steuerung, Überwachung und Wartung deines Insane Sound System`s. Dank ZeroConf-Technologie findet das Tool dein Insane Sound System automatisch im Netzwerk.
 
-   **🍎/🐧 Für Mac- & Linux-Nutzer:**
-   * Lade die `update_bluetooth.sh` aus dem Ordner `Updater/Linux_Mac/` herunter.
-   * Öffne ein Terminal, navigiere zur Datei und mache sie ausführbar: `chmod +x update_bluetooth.sh`
-   * Starte das Skript mit: `./update_bluetooth.sh`
+### ✨ Features des Tools
+* **Live Telemetrie-Dashboard:** Überwache Temperaturen (inkl. dynamischer Warn-Balken!), Audio-Quellen, WLAN-Signal und laufende Bluetooth-Metadaten in Echtzeit (1-Sekunden-Takt).
+* **One-Click OTA Flashing:** Update den internen Bluetooth-Chip (WROOM) komplett kabellos. Der Main-ESP32 (S3) fungiert als unsichtbare Bridge (`socket://<IP>:8888`) und flasht den WROOM über seine Hardware-Pins – kein USB-Kabel nötig!
+* **Automatischer Versions-Check:** Das Tool gleicht die WROOM-Firmware deiner Box automatisch mit GitHub ab und meldet sich, sobald ein Update bereitsteht.
+* **Favoriten-Speicher:** Speichere deine festen Insane Sound Systeme ab, um den Netzwerk-Scan beim nächsten Start zu überspringen.
+* **Hardware-Reset:** Zwinge den WROOM-Chip per Fernwartung zu einem sauberen Reboot, falls sich das Bluetooth mal aufhängt.
 
-4. Das smarte Skript fragt dich nun, ob es die aktuellste Firmware und das Flasher-Tool automatisch herunterladen soll. Bestätige mit `J` (Ja).
-5. Gib die IP-Adresse deines Insane Sound Systems ein (z.B. `192.168.178.50`).
-6. Lehne dich zurück und warte, bis im Terminal in grüner Schrift **"BÄÄÄM! FERTIG!"** steht.
+### Schritt 3: Das Bluetooth-Modul flashen (mit dem InsaneFlasher)
+Sobald dein Mainboard (S3) im WLAN läuft, flashen wir den Bluetooth-Chip (WROOM) drahtlos:
 
-### Schritt 4: Neustart & Genießen
-1. Ziehe den Netzstecker deines Insane Sound Systems.
-2. Warte exakt **5 Sekunden**, damit sich alle Kondensatoren komplett entladen.
-3. Stecke das System wieder ein. 
+**🪟 Für Windows-Nutzer (Empfohlen):**
+1. Lade dir die neueste `InsaneFlasher.exe` aus dem `Updater/Windows/` Ordner herunter.
+2. Doppelklick auf die `.exe` – das Tool startet sofort (keine Installation nötig).
+
+**🍎/🐧 Für macOS & Linux Nutzer:**
+1. Lade dir den Quellcode `InsaneFlasher.py` herunter.
+2. Installiere die nötigen Pakete im Terminal: `pip install customtkinter requests esptool zeroconf pillow`
+3. Starte das Tool: `python3 InsaneFlasher.py`
+
+**Der Flash-Vorgang:**
+Wähle dein Insane Sound System im Tool aus und klicke einfach auf den großen roten Button **"UPDATE JETZT INSTALLIEREN"**. Das Tool lädt automatisch die neueste Firmware herunter, bringt den Chip in den Flash-Modus, installiert das Update und startet das Insane Sound System neu. Lehn dich einfach zurück!
 
 **Glückwunsch! Dein Insane Sound System V5 ist jetzt voll einsatzbereit!**
 
