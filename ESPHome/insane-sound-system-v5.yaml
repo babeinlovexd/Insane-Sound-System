@@ -64,6 +64,18 @@ esphome:
   project:
     name: "babeinlovexd.insane_sound_system"
     version: "5.0"
+  on_boot:
+    priority: 800 
+    then:
+      - light.turn_on:
+          id: status_led
+          effect: "None"
+          red: 50%
+          green: 0%
+          blue: 100% 
+          brightness: 50%
+      - delay: 5s 
+      - script.execute: update_status_led
 
 esp32:
   board: esp32-s3-devkitc-1
@@ -97,6 +109,10 @@ wifi:
   ap:
     ssid: "Insane-Sound Fallback"
     password: !secret ap_password
+  on_connect:
+    - script.execute: update_status_led
+  on_disconnect:
+    - script.execute: update_status_led
 
 # 1. Den WLAN-Tunnel für das Flasher-Tool öffnen
 stream_server:
@@ -143,16 +159,17 @@ media_player:
     mode: stereo
     on_play:
       - switch.turn_on: amp_power
+      - script.execute: update_status_led
     on_pause:
       - switch.turn_off: amp_power
+      - script.execute: update_status_led
     on_idle:
       - switch.turn_off: amp_power
+      - script.execute: update_status_led
 
 # ##############################################################################
 # BELEUCHTUNG (WS2811)
 # ##############################################################################
-
-# Wir bleiben ZWINGEND beim Arduino Framework für dein I2S Audio!
 
 light:
   - platform: esp32_rmt_led_strip
@@ -197,13 +214,37 @@ light:
 
   - platform: esp32_rmt_led_strip
     name: "Mainboard Status LED"
-    id: onboard_led
+    id: status_led
     pin: GPIO48
+    internal: true
     num_leds: 1
     chipset: WS2812
     rgb_order: GRB     
     rmt_symbols: 48    
-    effects: *effekte
+    effects: 
+      - strobe:
+          name: "Error_Blink" # Für WLAN-Ausfall
+          colors:
+            - state: true
+              red: 100%
+              green: 0%
+              blue: 0%
+              duration: 500ms
+            - state: false
+              duration: 500ms
+      - strobe:
+          name: "Amp_Fault" # Für Verstärker-Fehler
+          colors:
+            - state: true
+              red: 100%
+              green: 0%
+              blue: 0%
+              duration: 200ms
+            - state: true
+              red: 100%
+              green: 100%
+              blue: 0% 
+              duration: 200ms
 
 # ##############################################################################
 # HARDWARE STEUERUNG (Switches, Buttons & Lüfter)
@@ -228,13 +269,14 @@ switch:
     pin: GPIO18  # S3 Pin 11 (Label: GPIO18)
     id: mux_select
     name: "Audio Quelle (Intern)"
-    entity_category: "diagnostic"
+    entity_category: "config"
     restore_mode: ALWAYS_ON # ON (HIGH) = B2 Eingang = S3/WLAN aktiv
     
   - platform: gpio
     pin: GPIO07
     id: bl_en_pin
     name: "WROOM EN (Reset)"
+    internal: true
     entity_category: "config"
     restore_mode: ALWAYS_ON # Muss HIGH sein, damit der WROOM normal läuft
 
@@ -242,6 +284,7 @@ switch:
     pin: GPIO39
     id: bl_io0_pin
     name: "WROOM IO0 (Boot)"
+    internal: true
     entity_category: "config"
     restore_mode: ALWAYS_ON # Muss HIGH sein, außer beim Flashen
 
@@ -257,11 +300,13 @@ button:
       - lambda: |-
           if (id(bl_status).state == "PLAY") id(uart_bl).write_str("PAUSE\n");
           else id(uart_bl).write_str("PLAY\n");
+
   - platform: template
     name: "BL Nächster Titel"
     icon: "mdi:skip-next"
     on_press:
       - uart.write: "NEXT\n"
+
   - platform: template
     name: "BL Vorheriger Titel"
     icon: "mdi:skip-previous"
@@ -347,6 +392,10 @@ binary_sensor:
       then:
         - switch.turn_off: amp_power
         - logger.log: "ALARM: TPA3110 meldet Fehler (Hitze/Kurzschluss)! Notabschaltung."
+        - script.execute: update_status_led
+    on_release:
+      then:
+        - script.execute: update_status_led
 
   # ---Hardware-Umschaltung des I2S-Buses ---
   - platform: gpio
@@ -360,11 +409,13 @@ binary_sensor:
       - media_player.stop: decken_audio
       - delay: 100ms
       - switch.turn_off: mux_select # LOW = Mux schaltet auf B1 (Bluetooth)
-      - switch.turn_on: amp_power 
+      - switch.turn_on: amp_power
+      - script.execute: update_status_led
     on_release:
       - logger.log: "Bluetooth beendet. Schalte Hardware-Multiplexer auf WLAN (B2)."
       - switch.turn_on: mux_select # HIGH = Mux schaltet auf B2 (S3/HA)
       - switch.turn_off: amp_power
+      - script.execute: update_status_led
 
 sensor:
   - platform: wifi_signal
@@ -413,22 +464,63 @@ text_sensor:
     name: "BL Titel"
     id: bl_title
     icon: "mdi:music"
+
   - platform: template
     name: "BL Interpret"
     id: bl_artist
     icon: "mdi:account-music"
+
   - platform: template
     name: "BL Album"
     id: bl_album
     icon: "mdi:album"
+
   - platform: template
     name: "BL Status"
     id: bl_status
     icon: "mdi:bluetooth"
+  
+  - platform: template
+    name: "BL Firmware Version"
+    id: bl_version
+    icon: "mdi:chip"
 
 # ##############################################################################
 # AUTOMATISIERUNG & INTERVALLE
 # ##############################################################################
+script:
+  - id: update_status_led
+    mode: restart 
+    then:
+      # Prio 1: Hardware-Fehler am Verstärker (falls du den FAULT-Pin des TPA3110 an einem GPIO hast)
+      - if:
+          condition:
+            # HINWEIS: Ersetze 'amp_fault_pin' mit deiner ID, falls du Pin 2 vom TPA3110 ausliest
+            # Falls nicht vorhanden, kannst du diesen Block löschen.
+            binary_sensor.is_on: amp_fault
+          then:
+            - light.turn_on: { id: status_led, effect: "Amp_Fault", brightness: 70% }
+          
+          # Prio 2: WLAN Verbindung verloren
+          else:
+            - if:
+                condition:
+                  not:
+                    wifi.connected:
+                then:
+                  - light.turn_on: { id: status_led, effect: "Error_Blink", brightness: 70% }
+                
+                # Prio 3: Bluetooth Stream läuft
+                else:
+                  - if:
+                      condition:
+                        binary_sensor.is_on: music_active_bl
+                      then:
+                        - light.turn_on: { id: status_led, effect: "None", red: 0%, green: 0%, blue: 100%, brightness: 70% }
+                      
+                      # Prio 4: Alles Prima (Idle)
+                      else:
+                        - light.turn_on: { id: status_led, effect: "None", red: 0%, green: 100%, blue: 0%, brightness: 30% }
 
 interval:
   # 1.Lüfter-Logik (Temperatur-basiert)
@@ -502,6 +594,8 @@ interval:
                 id(bl_title).publish_state("Bereit");
                 id(bl_artist).publish_state("-");
               } 
+              else if (line.rfind("VERSION:", 0) == 0) {
+                id(bl_version).publish_state(line.substr(8));
               // Lautstärke-Rückmeldung vom ESP BL synchronisieren
               else if (line.rfind("VOL:", 0) == 0) {
                 float vol = atof(line.substr(4).c_str());
@@ -513,3 +607,5 @@ interval:
               buffer += c;
             }
           }
+
+  

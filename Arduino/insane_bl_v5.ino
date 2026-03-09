@@ -5,7 +5,7 @@
  * PINOUT: BCK=27, LRCK=25, DATA=26, STATUS=14, RX0=3, TX0=1
  * ======================================================================================
  */
-
+String firmware_version = "5.0.0";
 #include "BluetoothA2DPSink.h"
 #include "driver/i2s_std.h"
 
@@ -92,6 +92,8 @@ void audio_data_callback(const uint8_t *data, uint32_t length) {
 void setup() {
     // 115200 Baud ist zwingend nötig für ESPHome Kommunikation & das Flashen!
     Serial.begin(115200); 
+    Serial.print("VERSION:");
+    Serial.println(firmware_version);
 
     pinMode(STATUS_PIN, OUTPUT);
     digitalWrite(STATUS_PIN, LOW); 
