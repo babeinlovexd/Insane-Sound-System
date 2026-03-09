@@ -596,6 +596,8 @@ interval:
               } 
               else if (line.rfind("VERSION:", 0) == 0) {
                 id(bl_version).publish_state(line.substr(8));
+              }
+              
               // Lautstärke-Rückmeldung vom ESP BL synchronisieren
               else if (line.rfind("VOL:", 0) == 0) {
                 float vol = atof(line.substr(4).c_str());
