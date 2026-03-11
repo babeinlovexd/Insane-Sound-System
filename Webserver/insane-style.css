@@ -1,24 +1,29 @@
 /* =======================================================
-   INSANE SOUND SYSTEM V5 - OFFLINE PREMIUM THEME
+   V5 - OFFLINE PREMIUM THEME (V2 COMPATIBLE)
 ======================================================= */
 
 :root {
-  --primary-color: #e67e22 !important;        /* Insane Orange */
-  --bg-color: #121212 !important;             /* Hintergrund */
-  --card-bg-color: #242424 !important;        /* Karten */
+  --primary-color: #e67e22 !important;
+  --bg-color: #121212 !important;
+  --card-bg-color: #242424 !important;
   --text-color: #ffffff !important;
-  --secondary-text-color: #f1c40f !important; /* Gelbe Akzente */
+  --primary-text-color: #ffffff !important;
+  --secondary-text-color: #888888 !important;
+  
+  /* V2 Web Components Variablen */
+  --mdc-theme-primary: #e67e22 !important;
+  --mdc-theme-secondary: #f1c40f !important;
+  --mdc-theme-background: #121212 !important;
+  --mdc-theme-surface: #242424 !important;
+  --mdc-theme-on-surface: #ffffff !important;
 }
 
-/* Hintergrund-Zwang */
 body, html, esp-app {
   background-color: #121212 !important;
   color: #ffffff !important;
-  /* Nur System-Schriften für Offline-Betrieb */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
 
-/* Titel oben einfügen ohne JavaScript */
 esp-app::before {
   content: "⚡ INSANE SOUND SYSTEM V5";
   display: block;
@@ -30,12 +35,10 @@ esp-app::before {
   letter-spacing: 2px;
 }
 
-/* Buttons stylen */
 mwc-button {
   --mdc-theme-primary: #e67e22 !important;
 }
 
-/* Schieberegler (Volume etc.) */
 mwc-slider {
   --mdc-theme-secondary: #f1c40f !important;
 }
