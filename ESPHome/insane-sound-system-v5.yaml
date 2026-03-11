@@ -81,11 +81,14 @@ esp32:
   board: esp32-s3-devkitc-1
   variant: esp32s3
   framework:
-    type: arduino # Arduino-Framework beibehalten, da NeoPixelBus das braucht!
+    type: arduino 
   flash_size: 16MB
 
 external_components:
   - source: github://oxan/esphome-stream-server
+  - source: 
+      type: local
+      path: custom_components
 
 psram:
   mode: octal
@@ -115,14 +118,16 @@ wifi:
     ssid: "Insane-Sound Fallback"
     password: !secret ap_password
 
-# 1. Den WLAN-Tunnel für das Flasher-Tool öffnen
 stream_server:
   - uart_id: uart_bl
     port: 8888
 
 web_server:
   port: 80
-
+  version: 1
+  css_url: ""
+  css_include: "insane-style.css"
+  
 captive_portal:
 
 # ##############################################################################
@@ -224,7 +229,7 @@ light:
     rmt_symbols: 48    
     effects: 
       - strobe:
-          name: "Error_Blink" # Für WLAN-Ausfall
+          name: "Error_Blink" 
           colors:
             - state: true
               red: 100%
@@ -234,7 +239,7 @@ light:
             - state: false
               duration: 500ms
       - strobe:
-          name: "Amp_Fault" # Für Verstärker-Fehler
+          name: "Amp_Fault" 
           colors:
             - state: true
               red: 100%
@@ -295,7 +300,7 @@ button:
     id: system_neustart
 
   - platform: template
-    name: "BL Play/Pause"
+    name: "BL Play-Pause"
     icon: "mdi:play-pause"
     on_press:
       - lambda: |-
@@ -338,10 +343,10 @@ button:
     icon: "mdi:play"
     on_press:
       - logger.log: "Starte WROOM normal neu..."
-      - switch.turn_on: bl_io0_pin      # Sicherstellen, dass IO0 HIGH ist 
-      - switch.turn_off: bl_en_pin      # Reset
+      - switch.turn_on: bl_io0_pin      
+      - switch.turn_off: bl_en_pin      
       - delay: 100ms
-      - switch.turn_on: bl_en_pin       # Normaler Boot
+      - switch.turn_on: bl_en_pin       
 
 number:
   - platform: template
@@ -493,11 +498,9 @@ script:
   - id: update_status_led
     mode: restart 
     then:
-      # Prio 1: Hardware-Fehler am Verstärker (falls du den FAULT-Pin des TPA3110 an einem GPIO hast)
+      # Prio 1: Hardware-Fehler am Verstärker 
       - if:
           condition:
-            # HINWEIS: Ersetze 'amp_fault_pin' mit deiner ID, falls du Pin 2 vom TPA3110 ausliest
-            # Falls nicht vorhanden, kannst du diesen Block löschen.
             binary_sensor.is_on: amp_fault
           then:
             - light.turn_on: { id: status_led, effect: "Amp_Fault", brightness: 70% }
