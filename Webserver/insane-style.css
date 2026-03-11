@@ -1,44 +1,90 @@
 /* =======================================================
-   V5 - OFFLINE PREMIUM THEME (V2 COMPATIBLE)
+   INSANE SOUND SYSTEM V5 - OFFLINE THEME (V1)
 ======================================================= */
 
-:root {
-  --primary-color: #e67e22 !important;
-  --bg-color: #121212 !important;
-  --card-bg-color: #242424 !important;
-  --text-color: #ffffff !important;
-  --primary-text-color: #ffffff !important;
-  --secondary-text-color: #888888 !important;
-  
-  /* V2 Web Components Variablen */
-  --mdc-theme-primary: #e67e22 !important;
-  --mdc-theme-secondary: #f1c40f !important;
-  --mdc-theme-background: #121212 !important;
-  --mdc-theme-surface: #242424 !important;
-  --mdc-theme-on-surface: #ffffff !important;
+body {
+  background-color: #121212;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  padding: 20px;
 }
 
-body, html, esp-app {
-  background-color: #121212 !important;
-  color: #ffffff !important;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-}
-
-esp-app::before {
+body::before {
   content: "⚡ INSANE SOUND SYSTEM V5";
   display: block;
   text-align: center;
   color: #e67e22;
-  font-size: 22px;
+  font-size: 26px;
   font-weight: bold;
   padding: 20px 0;
   letter-spacing: 2px;
+  text-shadow: 0 0 15px rgba(230, 126, 34, 0.5);
 }
 
-mwc-button {
-  --mdc-theme-primary: #e67e22 !important;
+h1, h2 {
+  display: none !important;
 }
 
-mwc-slider {
-  --mdc-theme-secondary: #f1c40f !important;
+table {
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+  border-collapse: separate;
+  border-spacing: 0 12px; 
+}
+
+tr {
+  background-color: #242424;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+td {
+  padding: 18px;
+  border: none;
+}
+
+td:first-child {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  font-weight: bold;
+  color: #cccccc;
+  font-size: 16px;
+}
+
+td:last-child {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  text-align: right;
+  color: #f1c40f;
+  font-family: monospace;
+  font-size: 16px;
+}
+
+button {
+  background-color: transparent;
+  color: #e67e22;
+  border: 2px solid #e67e22;
+  padding: 8px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #e67e22;
+  color: #121212;
+  box-shadow: 0 0 15px rgba(230, 126, 34, 0.8);
+}
+
+pre {
+  background-color: #000000;
+  color: #2ecc71;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 650px;
+  margin: 30px auto;
+  border: 1px solid #333333;
 }
