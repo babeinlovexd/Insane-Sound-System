@@ -1,0 +1,119 @@
+/* =======================================================
+   INSANE SOUND SYSTEM V5 - OFFICIAL WEB THEME
+======================================================= */
+
+:root {
+  --bg-main: #121212;
+  --bg-card: #242424;
+  --text-main: #ffffff;
+  --text-muted: #888888;
+  --accent-orange: #e67e22;
+  --accent-glow: #d35400;
+  --accent-yellow: #f1c40f;
+  --danger: #c0392b;
+}
+
+/* Grund-Layout */
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: 'Roboto', 'Segoe UI', Tahoma, sans-serif;
+  margin: 0;
+  padding: 30px 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Der Titel (wird durch JS noch cooler gemacht) */
+h1 {
+  color: var(--text-main);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+  margin-bottom: 5px;
+  text-shadow: 0px 4px 15px rgba(230, 126, 34, 0.4);
+}
+
+/* Die Haupttabelle (Sensoren & Schalter) als schicke Card */
+table {
+  background-color: var(--bg-card);
+  border-radius: 16px;
+  padding: 20px;
+  width: 100%;
+  max-width: 650px;
+  border-collapse: collapse;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  margin-top: 10px;
+}
+
+/* Einzelne Reihen (Sensoren) */
+tr {
+  border-bottom: 1px solid #333333;
+  transition: background-color 0.2s;
+}
+
+tr:hover {
+  background-color: #2a2a2a;
+}
+
+tr:last-child {
+  border-bottom: none;
+}
+
+/* Tabellen-Zellen */
+td {
+  padding: 16px 12px;
+  font-size: 15px;
+  vertical-align: middle;
+}
+
+/* Die Bezeichner (Namen der Sensoren) */
+td:first-child {
+  font-weight: bold;
+  color: var(--text-muted);
+}
+
+/* Die Werte (Zahlen/Status) */
+td:nth-child(2) {
+  font-family: monospace;
+  font-size: 16px;
+  color: var(--accent-yellow);
+  text-align: right;
+}
+
+/* Schalter / Buttons */
+button {
+  background-color: transparent;
+  color: var(--accent-orange);
+  border: 2px solid var(--accent-orange);
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-size: 12px;
+  float: right;
+}
+
+button:hover {
+  background-color: var(--accent-orange);
+  color: #121212;
+  box-shadow: 0 0 15px var(--accent-orange);
+}
+
+/* Der ESPHome Log-Bereich (falls aktiv) */
+#log {
+  background-color: #000000;
+  color: #2ecc71;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 650px;
+  width: 100%;
+  margin-top: 30px;
+  font-family: monospace;
+  font-size: 13px;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+  border: 1px solid #333;
+}
