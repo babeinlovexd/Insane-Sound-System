@@ -1,40 +1,31 @@
 /* =======================================================
-   INSANE SOUND SYSTEM V5 - DYNAMIC WEB ENGINE
+   INSANE SOUND SYSTEM V5 - BOOTLOADER & DESIGN ENGINE
 ======================================================= */
 
-document.addEventListener("DOMContentLoaded", function() {
-    // 1. Titel der Seite dynamisch zum "Insane" Branding ändern
+// 1. Schritt: Das offizielle ESPHome "Gehirn" nachladen
+const esphomeScript = document.createElement('script');
+esphomeScript.type = 'module';
+esphomeScript.src = 'https://oi.esphome.io/v2/www.js';
+document.head.appendChild(esphomeScript);
+
+// 2. Schritt: Deine Insane-Anpassungen anwenden, sobald alles geladen ist
+esphomeScript.onload = () => {
+    console.log("Insane Engine: ESPHome Core geladen.");
+    
+    // Wir warten kurz, bis die Elemente im Browser erstellt wurden
+    setTimeout(() => {
+        const header = document.querySelector("h1");
+        if(header) {
+            header.innerHTML = "⚡ INSANE SOUND SYSTEM <span style='color:#f1c40f'>V5</span>";
+        }
+    }, 500);
+};
+
+// Falls der Header sich später aktualisiert (ESPHome v2 Dynamik)
+const observer = new MutationObserver(() => {
     const header = document.querySelector("h1");
-    if(header) {
+    if (header && !header.innerHTML.includes("INSANE")) {
         header.innerHTML = "⚡ INSANE SOUND SYSTEM <span style='color:#f1c40f'>V5</span>";
     }
-
-    // 2. Einen coolen Subtitel unter die Überschrift packen
-    const subTitle = document.createElement("p");
-    subTitle.innerHTML = "OFFICIAL WEB-HUB & TELEMETRY";
-    subTitle.style.color = "#888888";
-    subTitle.style.letterSpacing = "4px";
-    subTitle.style.marginTop = "0px";
-    subTitle.style.marginBottom = "25px";
-    subTitle.style.fontSize = "11px";
-    subTitle.style.fontWeight = "bold";
-    subTitle.style.textAlign = "center";
-    
-    if(header) {
-        header.parentNode.insertBefore(subTitle, header.nextSibling);
-    }
-
-    // 3. Button Klick-Animation (fühlt sich reaktionsschneller an)
-    // ESPHome lädt Buttons oft dynamisch nach, wir überwachen Klicks global
-    document.body.addEventListener("mousedown", function(e) {
-        if(e.target.tagName === "BUTTON") {
-            e.target.style.transform = "scale(0.92)";
-        }
-    });
-    
-    document.body.addEventListener("mouseup", function(e) {
-        if(e.target.tagName === "BUTTON") {
-            e.target.style.transform = "scale(1)";
-        }
-    });
 });
+observer.observe(document.body, { childList: true, subtree: true });
