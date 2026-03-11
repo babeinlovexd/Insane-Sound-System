@@ -14,6 +14,13 @@ import contextlib
 import json
 from PIL import Image
 from zeroconf import ServiceBrowser, Zeroconf
+import ctypes
+
+try:
+    myappid = 'babeinlovexd.insaneflasher.v5' 
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+except:
+    pass
 
 # --- HILFSFUNKTION FÜR DIE .EXE ---
 def resource_path(relative_path):
@@ -77,14 +84,16 @@ class InsaneFlasher(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("ISS V5 - Official Hub & Telemetry")
+        # 1. FENSTER-SETUP
+        self.title("Insane Sound System V5 - Official Hub")
         self.geometry("780x850") 
         self.configure(fg_color="#1a1a1a")
         
         try:
-            self.iconbitmap(resource_path("logo.ico"))
-        except:
-            pass
+            icon_p = resource_path("logo.ico")
+            self.iconbitmap(icon_p)
+        except Exception as e:
+            print(f"Icon konnte nicht geladen werden: {e}")
 
         self.scanned_devices = {}   # Alle per WLAN gefundenen Boxen
         self.favorite_devices = {}  # Deine gespeicherten Favoriten
@@ -133,17 +142,32 @@ class InsaneFlasher(ctk.CTk):
                                                 fg_color="#1a1a1a", button_color="#333333", button_hover_color="#444444", command=self.on_device_select)
         self.device_dropdown.pack(side="left", fill="x", expand=True, padx=(0, 10))
 
-        # Favoriten Button
-        self.fav_btn = ctk.CTkButton(dev_ctrl_frame, text="⭐", width=40, height=35, fg_color="#f1c40f", hover_color="#f39c12", text_color="#000000", font=("Roboto", 16), command=self.save_favorite)
-        self.fav_btn.pack(side="left", padx=(0, 5))
+        # 1. Favoriten Button (Outline-Style mit Text)
+        self.fav_btn = ctk.CTkButton(
+            dev_ctrl_frame, text="⭐ Merken", width=95, height=32, 
+            fg_color="transparent", border_width=1, border_color="#f1c40f", 
+            hover_color="#333333", text_color="#f1c40f", font=("Roboto", 13, "bold"), 
+            command=self.save_favorite
+        )
+        self.fav_btn.pack(side="left", padx=(0, 5)) 
 
-        # Favorit Löschen Button (NEU)
-        self.del_fav_btn = ctk.CTkButton(dev_ctrl_frame, text="🗑️", width=40, height=35, fg_color="#c0392b", hover_color="#e74c3c", font=("Roboto", 16), command=self.delete_favorite)
-        self.del_fav_btn.pack(side="left", padx=(0, 10))
+        # 2. Favorit Löschen Button (Outline-Style mit Text)
+        self.del_fav_btn = ctk.CTkButton(
+            dev_ctrl_frame, text="✖ Löschen", width=95, height=32, 
+            fg_color="transparent", border_width=1, border_color="#c0392b", 
+            hover_color="#333333", text_color="#c0392b", font=("Roboto", 13, "bold"), 
+            command=self.delete_favorite
+        )
+        self.del_fav_btn.pack(side="left", padx=(0, 20)) 
 
-        # Reboot Button (WROOM)
-        self.restart_btn = ctk.CTkButton(dev_ctrl_frame, text="🔄 WROOM Reset", width=120, height=35, fg_color="#e67e22", hover_color="#d35400", font=("Roboto", 12, "bold"), command=self.restart_bluetooth)
-        self.restart_btn.pack(side="left")
+        # 3. Reboot Button (Outline-Style mit Text)
+        self.restart_btn = ctk.CTkButton(
+            dev_ctrl_frame, text="⚡ Reset", width=95, height=32, 
+            fg_color="transparent", border_width=1, border_color="#e67e22", 
+            hover_color="#333333", text_color="#e67e22", font=("Roboto", 13, "bold"), 
+            command=self.restart_bluetooth
+        )
+        self.restart_btn.pack(side="left", padx=(0, 5))
 
         # ---------------------------------------------------------
         # 2. Card: LIVE TELEMETRY DASHBOARD
@@ -216,7 +240,7 @@ class InsaneFlasher(ctk.CTk):
         self.fw_frame = ctk.CTkFrame(self.card_flash, fg_color="transparent")
         self.fw_frame.pack(pady=5, padx=20, fill="x")
 
-        self.fw_label = ctk.CTkLabel(self.fw_frame, text="Version: V5-dev", font=("Roboto", 14), text_color="#ffffff")
+        self.fw_label = ctk.CTkLabel(self.fw_frame, text="Prüfe Firmware Status...", font=("Roboto", 14), text_color="#ffffff")
         self.fw_label.pack(side="left")
 
         self.status_label = ctk.CTkLabel(self.card_flash, text="Bereit.", font=("Roboto", 13), text_color="#888888")
@@ -234,10 +258,9 @@ class InsaneFlasher(ctk.CTk):
         )
         self.footer_label.pack(side="bottom", pady=(0, 10))
         
-        # Favoriten laden und Scan starten (Deine bestehenden Zeilen)
-        self.load_favorites()
-        self.start_scan()
+        self.sync_timer = None
 
+        # Favoriten laden und Scan starten (Deine bestehenden Zeilen)
         self.load_favorites()
         self.start_scan()
 
@@ -345,11 +368,16 @@ class InsaneFlasher(ctk.CTk):
     # --- TELEMETRY DASHBOARD FUNKTIONEN ---
 
     def sync_live_data(self):
+        # ---Alten Timer abbrechen, falls wir die Box im Dropdown wechseln ---
+        if hasattr(self, 'sync_timer') and self.sync_timer:
+            self.after_cancel(self.sync_timer)
+            self.sync_timer = None
+
         if self.is_fetching: return
         ip = self.dropdown_mapping.get(self.device_dropdown.get())
         if not ip: 
-            # Falls keine Box gewählt ist, in 2 Sek nochmal schauen
-            self.after(2000, self.sync_live_data)
+            # Falls keine Box gewählt ist, in 2 Sek nochmal schauen (Timer-ID speichern!)
+            self.sync_timer = self.after(2000, self.sync_live_data)
             return
         self.is_fetching = True
         threading.Thread(target=self._fetch_api_data, args=(ip,), daemon=True).start()
@@ -430,8 +458,8 @@ class InsaneFlasher(ctk.CTk):
 
         self.is_fetching = False
         
-        # DAS HERZSTÜCK: Automatischer Re-Sync nach exakt 1 Sekunde (1000ms)
-        self.after(1000, self.sync_live_data)
+        # DAS HERZSTÜCK: Automatischer Re-Sync nach 1 Sekunde (und Timer-ID speichern!)
+        self.sync_timer = self.after(1000, self.sync_live_data)
 
     # --- FLASHING FUNKTIONEN ---
     def start_download_thread(self):
