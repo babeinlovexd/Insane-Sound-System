@@ -23,7 +23,7 @@
 # - GPIO 4           : LED Zone 1 Daten   -> Zum SN74AHCT125 Level Shifter
 # - GPIO 5           : LED Zone 2 Daten   -> Zum SN74AHCT125 Level Shifter
 # - GPIO 6           : LED Zone 3 Daten   -> Zum SN74AHCT125 Level Shifter
-# - GPIO 48          : LED Onboard  
+# - GPIO 48          : LED                -> Onboard  
 #
 # [KLIMA & SENSOREN]
 # - GPIO 42          : Lüfter PWM Out     -> Steuert 24V Gehäuselüfter 
@@ -76,6 +76,9 @@ esphome:
           brightness: 50%
       - delay: 5s 
       - script.execute: update_status_led
+      - text_sensor.template.publish:
+          id: bl_version
+          state: "0.0"
 
 esp32:
   board: esp32-s3-devkitc-1
@@ -597,6 +600,7 @@ interval:
                 id(bl_status).publish_state("Getrennt");
                 id(bl_title).publish_state("Bereit");
                 id(bl_artist).publish_state("-");
+                id(bl_version).publish_state("0.0");
               } 
               else if (line.rfind("VERSION:", 0) == 0) {
                 id(bl_version).publish_state(line.substr(8));
