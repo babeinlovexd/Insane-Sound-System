@@ -57,13 +57,34 @@
 # - GPIO 14          : Music Status Out   -> Zu S3 GPIO 3 (HIGH = Play, LOW = Pause/Offline)
 #
 # ##############################################################################
+# OPTIONAL: FRONT-PANEL ERWEITERUNG (OLED & Tasten)
+# Entferne die # Raute bei 
+#
+#           --->#packages:
+#           --->#  frontpanel: !include insane-frontpanel.yaml 
+#
+# um die Erweiterung zu aktivieren!
+#
+# | | | | | | | | | | | | | | | | | | | | | | |
+# v v v v v v v v v v v v v v v v v v v v v v v 
+# packages:
+#   frontpanel: !include insane-frontpanel.yaml
+# ##############################################################################
+
+substitutions:
+  # =======================================================
+  # USER-KONFIGURATION (Hier die Entität vom ISS anpassen, falls nötig!)
+  # =======================================================
+  ha_player_id: "media_player.insane_sound_system"
+
+# ##############################################################################
 
 esphome:
   name: insane-sound-system-v5
   friendly_name: "Insane Sound System V5"
   project:
     name: "babeinlovexd.insane_sound_system"
-    version: "5.0"
+    version: "5.1"
   on_boot:
     priority: 800 
     then:
@@ -74,11 +95,12 @@ esphome:
           green: 0%
           blue: 100% 
           brightness: 50%
-      - delay: 5s 
-      - script.execute: update_status_led
       - text_sensor.template.publish:
           id: bl_version
           state: "0.0"
+      - delay: 5s 
+      - script.execute: update_status_led
+      
 
 esp32:
   board: esp32-s3-devkitc-1
@@ -307,7 +329,7 @@ button:
     icon: "mdi:play-pause"
     on_press:
       - lambda: |-
-          if (id(bl_status).state == "PLAY") id(uart_bl).write_str("PAUSE\n");
+          if (id(media_status).state == "Wiedergabe") id(uart_bl).write_str("PAUSE\n");
           else id(uart_bl).write_str("PLAY\n");
 
   - platform: template
@@ -420,11 +442,26 @@ binary_sensor:
       - switch.turn_off: mux_select # LOW = Mux schaltet auf B1 (Bluetooth)
       - switch.turn_on: amp_power
       - script.execute: update_status_led
+      - text_sensor.template.publish:
+          id: media_status
+          state: "Bluetooth aktiv"
     on_release:
       - logger.log: "Bluetooth beendet. Schalte Hardware-Multiplexer auf WLAN (B2)."
       - switch.turn_on: mux_select # HIGH = Mux schaltet auf B2 (S3/HA)
       - switch.turn_off: amp_power
       - script.execute: update_status_led
+      - text_sensor.template.publish:
+          id: media_title
+          state: !lambda 'return id(ha_title_bridge).state.length() > 0 ? id(ha_title_bridge).state : "Bereit";'
+      - text_sensor.template.publish:
+          id: media_artist
+          state: !lambda 'return id(ha_artist_bridge).state.length() > 0 ? id(ha_artist_bridge).state : "-";'
+      - text_sensor.template.publish:
+          id: media_album
+          state: !lambda 'return id(ha_album_bridge).state.length() > 0 ? id(ha_album_bridge).state : "-";'
+      - text_sensor.template.publish:
+          id: media_status
+          state: "WLAN aktiv"
 
 sensor:
   - platform: wifi_signal
@@ -467,32 +504,76 @@ sensor:
           window_size: 5
           send_every: 1
 
-# Metadaten vom Bluetooth (Songtexte im Dashboard)
+# Metadaten (Universell für WLAN & Bluetooth)
 text_sensor:
+  # --- 1. Die universellen, sichtbaren Sensoren ---
   - platform: template
-    name: "BL Titel"
-    id: bl_title
+    name: "Aktueller Titel"
+    id: media_title
     icon: "mdi:music"
 
   - platform: template
-    name: "BL Interpret"
-    id: bl_artist
+    name: "Aktueller Interpret"
+    id: media_artist
     icon: "mdi:account-music"
 
   - platform: template
-    name: "BL Album"
-    id: bl_album
+    name: "Aktuelles Album"
+    id: media_album
     icon: "mdi:album"
 
   - platform: template
-    name: "BL Status"
-    id: bl_status
-    icon: "mdi:bluetooth"
+    name: "Wiedergabe Status"
+    id: media_status
+    icon: "mdi:play-network"
   
   - platform: template
     name: "BL Firmware Version"
     id: bl_version
     icon: "mdi:chip"
+
+  # --- 2. Die unsichtbaren Brücken zu Home Assistant ---
+  - platform: homeassistant
+    id: ha_title_bridge
+    entity_id: ${ha_player_id}
+    attribute: media_title
+    internal: true
+    on_value:
+      - if:
+          condition:
+            switch.is_on: mux_select
+          then:
+            - text_sensor.template.publish:
+                id: media_title
+                state: !lambda 'return x.length() > 0 ? x : "WLAN Stream";'
+
+  - platform: homeassistant
+    id: ha_artist_bridge
+    entity_id: ${ha_player_id}
+    attribute: media_artist
+    internal: true
+    on_value:
+      - if:
+          condition:
+            switch.is_on: mux_select
+          then:
+            - text_sensor.template.publish:
+                id: media_artist
+                state: !lambda 'return x.length() > 0 ? x : "-";'
+
+  - platform: homeassistant
+    id: ha_album_bridge
+    entity_id: ${ha_player_id}
+    attribute: media_album
+    internal: true
+    on_value:
+      - if:
+          condition:
+            switch.is_on: mux_select
+          then:
+            - text_sensor.template.publish:
+                id: media_album
+                state: !lambda 'return x.length() > 0 ? x : "-";'
 
 # ##############################################################################
 # AUTOMATISIERUNG & INTERVALLE
@@ -587,19 +668,19 @@ interval:
               
               // Metadaten Parser
               if (line.rfind("TITLE:", 0) == 0) {
-                id(bl_title).publish_state(line.substr(6));
+                id(media_title).publish_state(line.substr(6));
               } else if (line.rfind("ARTIST:", 0) == 0) {
-                id(bl_artist).publish_state(line.substr(7));
+                id(media_artist).publish_state(line.substr(7));
               } else if (line.rfind("ALBUM:", 0) == 0) {
-                id(bl_album).publish_state(line.substr(6));
+                id(media_album).publish_state(line.substr(6));
               } else if (line.find("STATUS:PLAY") == 0) {
-                id(bl_status).publish_state("Wiedergabe");
+                id(media_status).publish_state("Wiedergabe");
               } else if (line.find("STATUS:PAUSE") == 0) {
-                id(bl_status).publish_state("Pause");
+                id(media_status).publish_state("Pause");
               } else if (line.find("STATUS:OFFLINE") == 0) {
-                id(bl_status).publish_state("Getrennt");
-                id(bl_title).publish_state("Bereit");
-                id(bl_artist).publish_state("-");
+                id(media_status).publish_state("Getrennt");
+                id(media_title).publish_state("Bereit");
+                id(media_artist).publish_state("-");
                 id(bl_version).publish_state("0.0");
               } 
               else if (line.rfind("VERSION:", 0) == 0) {

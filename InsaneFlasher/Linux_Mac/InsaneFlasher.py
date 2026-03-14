@@ -218,10 +218,10 @@ class InsaneFlasher(ctk.CTk):
         self.val_temp_esp = create_stat(1, 1, "TEMP ESP32", is_temp=True)
         self.val_temp_pwr = create_stat(1, 2, "TEMP POWER", is_temp=True)
 
-        # Reihe 3: Bluetooth Metadaten
-        self.val_bl_stat = create_stat(2, 0, "BL STATUS")
-        self.val_bl_song = create_stat(2, 1, "BL TITEL")
-        self.val_bl_art = create_stat(2, 2, "BL INTERPRET")
+        # Reihe 3: Medien Metadaten
+        self.val_bl_stat = create_stat(2, 0, "MEDIA STATUS")
+        self.val_bl_song = create_stat(2, 1, "MEDIA TITEL")
+        self.val_bl_art = create_stat(2, 2, "MEDIA INTERPRET")
 
         # Reihe 4: System
         self.val_fan = create_stat(3, 0, "LÜFTER")
@@ -398,9 +398,9 @@ class InsaneFlasher(ctk.CTk):
         t_amp = get_state("sensor", "Temp Verstärker")
         t_esp = get_state("sensor", "Temp ESP32 Umgebung")
         t_pwr = get_state("sensor", "Temp Spannungsregler")
-        bl_stat = get_state("text_sensor", "BL Status")
-        bl_song = get_state("text_sensor", "BL Titel")
-        bl_art = get_state("text_sensor", "BL Interpret")
+        bl_stat = get_state("text_sensor", "Wiedergabe Status")
+        bl_song = get_state("text_sensor", "Aktueller Titel")
+        bl_art = get_state("text_sensor", "Aktueller Interpret")
         fan = get_state("fan", "Gehäuse Lüfter")
         wifi = get_state("sensor", "WLAN Signal")
         bl_version = get_state("text_sensor", "BL Firmware Version") # Version holen
