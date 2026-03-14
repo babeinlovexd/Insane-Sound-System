@@ -15,8 +15,6 @@ String firmware_version = "5.0.0";
 BluetoothA2DPSink a2dp_sink;
 i2s_chan_handle_t tx_handle = NULL; 
 
-String firmware_version = "5.0.0"
-
 // ======================================================================================
 // 1. HARDWARE MUX TRIGGER & STATUS
 // ======================================================================================

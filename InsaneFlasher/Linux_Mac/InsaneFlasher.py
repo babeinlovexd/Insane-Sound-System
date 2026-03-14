@@ -48,7 +48,7 @@ def get_firmware_path():
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
-FIRMWARE_URL = "https://raw.githubusercontent.com/babeinlovexd/Insane-Sound-System/V5-dev/Firmware/insane_bl_v5.ino.merged.bin"
+FIRMWARE_URL = "https://raw.githubusercontent.com/babeinlovexd/Insane-Sound-System/main/Firmware/insane_bl_v5.ino.merged.bin"
 GITHUB_URL = "https://github.com/babeinlovexd"
 
 class DeviceListener:
@@ -535,7 +535,7 @@ class InsaneFlasher(ctk.CTk):
     def check_for_updates(self, local_version):
         try:
             # 1. Online Version holen (Raw URL deiner version.txt)
-            VERSION_URL = "https://raw.githubusercontent.com/babeinlovexd/Insane-Sound-System/V5-dev/Firmware/version.txt"
+            VERSION_URL = "https://raw.githubusercontent.com/babeinlovexd/Insane-Sound-System/main/Firmware/version.txt"
             online_version = requests.get(VERSION_URL, timeout=3).text.strip()
             
             # 2. Logik & UI Update
