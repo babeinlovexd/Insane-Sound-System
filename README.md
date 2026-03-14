@@ -62,7 +62,7 @@ Jeder kann dieses System bauen. Folge einfach stur diesen Schritten:
 
 ### 🛠️ Bestückungshilfe
 Hier findest du die interaktive Stückliste (iBOM) für das Insane Sound System:
-<a href="https://github.com/babeinlovexd/Insane-Sound-System/blob/main/BOM/PCB_insane%20sound%20system%20v5.1_rev0.html" target="_blank">👉 <b>Interaktive Bestückungshilfe</b></a>
+<a href="https://htmlpreview.github.io/?https://github.com/babeinlovexd/Insane-Sound-System/blob/main/BOM/PCB_insane%20sound%20system%20v5.1_rev0.html">👉 <b>Interaktive Bestückungshilfe</b></a>
 
 ### Schritt 2: ESPHome vorbereiten (Mainboard S3)
 Aus Sicherheitsgründen nutzt dieses Projekt ausgelagerte Passwörter. 
