@@ -1,101 +1,110 @@
-# 🚀 Insane Sound System (V4)
+# 🔊 Insane Sound System V5
 
-Willkommen beim **Insane Sound System V4**! Dies ist eine kompromisslose, WLAN- und Bluetooth-fähige Audio-Matrix auf Basis des ESP32-S3 und eines ESP32 D1 Mini. Es kombiniert High-Fidelity I2S-Audio, automatische Quellenumschaltung per Hardware-Multiplexer, einen Class-D Verstärker und 4-Zonen WS2811-LED-Steuerung auf einem einzigen, optimierten Custom-PCB.
+Willkommen beim **Insane Sound System V5** – dem ultimativen, smarten High-End WLAN & Bluetooth Lautsprecher-Controller!
 
-## 📦 Verzeichnis-Inhalt
-* `/Gerber/` - Die Produktionsdaten für die Platine (ZIP-Datei).
-* `/ESPHome/` - Die `.yaml` Konfigurationsdatei für das ESP32-S3 Mainboard.
-* `/Arduino/` - Der `.ino` Sketch für den Bluetooth-Empfänger (D1 Mini).
+Monatelange Entwicklung, unzählige Prototypen, Schweiß, Tränen und der unbändige Wille, die absolut perfekte Audio-Zentrale zu erschaffen, sind in diese Platine geflossen. Das **Insane Sound System V5** ist das ultimative Resultat dieses Wahnsinns. 
 
----
+**Was ist das Insane Sound System überhaupt?**
+Es ist nicht einfach nur ein Verstärker-Board. Es ist das kompromisslose, smarte Herzstück für deine selbstgebaute High-End-Audiobox. Es verbindet audiophile Hardware mit der unendlichen Flexibilität von Smart Homes und gibt dir die absolute Kontrolle über Sound, Licht und Hardware – alles auf einer winzigen, professionellen 100x100mm Platine.
 
-## 🛠️ Schritt 1: Die Platine fertigen lassen
-Lade die ZIP-Datei aus dem Ordner `/Gerber/` bei einem Platinenfertiger deiner Wahl (z. B. über AliExpress oder JLCPCB) hoch. Das Board nutzt zwei Lagen (Top/Bottom). Alle Toleranzen sind Standard, du brauchst keine teuren Sonderfertigungs-Optionen wählen.
+### 🔥 Was kann das Teil ALLES?
+Dieses Board ist bis unter die Zähne bewaffnet mit Features:
+* **Nahtlose Dual-Audio-Quellen:** Streame Musik über WLAN (Home Assistant/ESPHome) oder verbinde dein Handy direkt über Bluetooth. Ein dedizierter Hardware-Multiplexer schaltet verlustfrei und absolut knackfrei zwischen den Audioquellen um.
+* **Bluetooth mit Metadaten:** Der Bluetooth-Chip streamt nicht nur Musik, sondern schickt Titel, Interpret, Album und den Play/Pause-Status direkt auf dein Smart-Home-Dashboard.
+* **Insane Turbo Mode:** Zu leise? Ein digital schaltbarer Gain-Boost auf Hardware-Ebene holt die maximale Lautstärke aus dem TPA3110-Verstärker heraus.
+* **3-Zonen RGB-Lichtshow:** Steuere bis zu drei separate 24V WS28xx-LED-Streifen direkt über die Platine (mit integriertem Level-Shifter für saubere 5V-Datensignale). Inklusive Effekten wie "Knight Rider", "Feuerwerk" oder "Regenbogen".
+* **Smartes Thermomanagement:** Drei unabhängige Temperatursensoren (I2C) überwachen Verstärker, Spannungsregler und Gehäusetemperatur. Wird es heiß, regelt das System stufenlos einen 5V-PWM-Gehäuselüfter hoch. Droht der Hitzetod, greift die automatische Notabschaltung.
+* **Vollautomatische Stromspar-Logik:** Der Verstärker und der DAC werden hardwareseitig in den Standby (Mute) geschickt, wenn keine Musik spielt. Kein Grundrauschen, kein unnötiger Stromverbrauch.
+* **Over-The-Air (OTA) Updates für ALLE Chips:** Flashe nicht nur das Hauptsystem über WLAN, sondern – dank unseres massgeschneiderten InsaneFLasher – auch den abgetrennten Bluetooth-Chip komplett drahtlos über das Netzwerk!
 
-## 🛒 Schritt 2: Bauteile besorgen & Bestückung
-Die nötigen SMD- und THT-Bauteile bekommst du problemlos und günstig bei Shops wie Amazon oder AliExpress. Eine genaue Stückliste findest du weiter unten.
+Diese Version wurde von Grund auf neu entwickelt. Das Ziel: Maximale Audio-Leistung, idiotensichere Bedienung und ein Hardware-Design, das sich professionell fertigen und trotzdem völlig entspannt zu Hause zusammenbauen lässt.
 
-**Wichtige Löthinweise:**
-1. **Thermik:** Achte darauf, dass das untere Pad (Exposed Pad) des TPA3110D2-Chips gut mit den Thermal-Vias auf der Platine verlötet ist.
-2. **GND-Jumper (GNDC):** Schließe den Jumper an H4, um die saubere Elektronik-Masse mit der Power-Masse zu verbinden (Star-Ground Konzept für rauschfreien Sound).
-3. **Terminierung:** Die 22-Ohm-Widerstände sitzen absichtlich extrem nah an den GPIOs der ESPs. Vergiss diese nicht, sie verhindern Audio-Verzerrungen auf dem I2S-Bus!
+<img src="Images/3.png" width="400" alt="Insane Sound System V5 - 3D Render">
 
----
+## ✨ Was ist neu in V5? (Hardware & Features)
 
-## 💻 Schritt 3: Software 1 - Der Bluetooth-ESP (D1 Mini)
-Der D1 Mini ist ausschließlich für den Bluetooth-Empfang zuständig und triggert die automatische Umschaltung.
+Wir haben keine halben Sachen gemacht. V5 bringt massive Upgrades unter der Haube:
 
-1. Öffne die `.ino` Datei in der **Arduino IDE**.
-2. Installiere über den Bibliotheksverwalter folgende Libraries: `ESP32-A2DP` (von pschatzmann) und `WiFiManager` (von tzapu).
-3. **WICHTIG VOR DEM FLASHEN:** Wenn der D1 Mini bereits auf die Hauptplatine gelötet ist, **ziehe zwingend das 24V-Netzteil ab**, bevor du das USB-Kabel einsteckst! (Schutz vor Spannungskollisionen).
-4. Flashe den Code auf den ESP32 D1 Mini.
-5. **Erster Start:** Der ESP spannt für 60 Sekunden ein WLAN namens `INSANE-SETUP` auf. Verbinde dich mit dem Handy und trage dein Heim-WLAN ein.
+* **Kompaktes 100x100mm Design:** Die Platine passt in fast jedes Gehäuse und bleibt genau unter der magischen Grenze, um bei PCB-Herstellern extrem günstig bestellt werden zu können. Bessere Thermik und optimales Routing auf kleinstem Raum!
+* **Handlötfreundliches SMD-Design:** Das Board besteht zu 90% aus SMD-Bauteilen für kürzere, saubere Signalwege und ein modernes Design. **Keine Panik:** Die kleinsten Bauteile sind strikt auf die **Größe 1206** limitiert! Du brauchst kein Mikroskop und keine ruhigen Chirurgen-Hände, alles lässt sich völlig entspannt von Hand löten.
+* **Dual-Brain Architektur:** Ein moderner ESP32-S3 steuert als Haupt-Hirn Home Assistant, WLAN und LEDs. Ein dedizierter ESP32-WROOM-32E kümmert sich *ausschließlich* um verlustfreies Bluetooth-Audio.
+* **Echter Hardware-Multiplexer:** Der SN74CB3Q3257 Chip schaltet das I2S-Audiosignal blitzschnell und ohne nerviges Knacken zwischen WLAN (S3) und Bluetooth (WROOM) um.
+* **Smartes Temperatur-Management:** Drei TMP102-Sensoren überwachen den Verstärker (TPA3110), die Spannungsregler und die ESP32-Umgebung. Ein 5V-Gehäuselüfter wird stufenlos per PWM gesteuert, sobald es im Gehäuse warm wird.
+* **Over-The-Air Bluetooth Updates:** Das WROOM-Modul kann jetzt komplett drahtlos über WLAN geflasht werden. Kein USB-Kabel, kein Schrauben – einfach per Knopfdruck im Dashboard!
 
----
-
-## 🏠 Schritt 4: Software 2 - Das Mainboard (ESP32-S3 N16R8)
-Der S3 steuert LEDs, Lüfter, Home Assistant Streams und den Hardware-Multiplexer.
-
-1. Binde den S3 in dein **ESPHome** Dashboard ein.
-2. Kopiere den kompletten Inhalt der beiliegenden `.yaml` Datei in deine ESPHome-Konfiguration.
-3. Passe oben im Code deine WLAN-Daten (`!secret`) an.
-4. Flashe das Board (z. B. initial über USB, danach via OTA). 
-5. **Hinweis:** Der Code aktiviert automatisch den 8MB Octal-PSRAM des S3. Der Audio-Puffer ist damit gigantisch und Streams laufen absolut ruckelfrei.
+<img src="Images/1.png" width="400" alt="Platinen Layout 2D Ansicht">
 
 ---
 
-## 🔌 Schritt 5: Verkabelung & Erster Start
-1. Verbinde deine Lautsprecher an den Schraubklemmen (`L+ / L-` und `R+ / R-`).
-2. Schließe deine WS2811 LED-Streifen an die 4 Zonen-Ausgänge an.
-3. **Lüfter:** Schließe deinen **5V Gehäuselüfter** an. Der Pluspol kommt an die 5V-Spannungsschiene, der Minuspol wird über den BC547B Transistor per PWM (GPIO 42) automatisch temperaturgesteuert.
-4. **Power On:** Verbinde das 24V Netzteil. 
+## 🛒 Einkaufsliste & Bauteile (BOM)
 
-*Standardmäßig ist das System im WLAN-Modus (Home Assistant). Sobald du dich mit dem Handy per Bluetooth verbindest und "Play" drückst, schaltet der Hardware-Multiplexer blitzschnell und knackfrei auf den Bluetooth-Stream um!*
+Die komplette und detaillierte Liste aller benötigten Bauteile findest du im Ordner `BOM/` (als Datei `BOM_insane-sound-system-v5_xxxx-xx-xx.csv`). 
+
+Fast alle Standard-Komponenten (wie die 1206 Widerstände, Kondensatoren, ESP-Module und den Verstärker-Chip) kannst du problemlos in vielen Shops bestellen. 
 
 ---
 
-## 🛒 Stückliste (BOM - Bill of Materials)
+## 🛠️ Die Schritt-für-Schritt Anleitung
 
-### 🧠 Mikrocontroller & Module
-| Bauteil / Bezeichnung | Menge | Beschreibung |
-| :--- | :--- | :--- |
-| **ESP32-S3-DevKitC-1 N16R8** | 1 | Das Mainboard (Wichtig: Auf die Variante mit 16MB Flash und 8MB PSRAM achten!) |
-| **ESP32 D1 Mini BL** | 1 | Das Bluetooth-Empfängermodul |
-| **PCM5102A Modul** | 1 | High-Fidelity I2S Audio DAC |
-| **MP1584EN Modul** | 1 | Step-Down Konverter (Erzeugt 5V aus 24V) |
+Jeder kann dieses System bauen. Folge einfach stur diesen Schritten:
 
-### 🎵 Audio & Logik-ICs (SMD)
-| Bauteil / Bezeichnung | Menge | Beschreibung |
-| :--- | :--- | :--- |
-| **TPA3110D2PWP** | 1 | 15W+15W Class-D Audio-Verstärker-Chip |
-| **SN74CB3Q3257PWR** | 1 | 4-Kanal Hochgeschwindigkeits-Multiplexer (Der Hardware-Switch!) |
-| **SN74AHCT125N** | 1 | Quad Level-Shifter (Macht aus 3.3V saubere 5V für die WS2811 LEDs) |
-| **LM75AD** | 3 | I2C Temperatur-Sensoren für die Klima-Überwachung |
+### Schritt 1: Hardware löten
+1. Bestelle die Platine anhand der Gerber-Dateien im Ordner `Gerber/`.
+2. Löte zuerst die SMD-Bauteile (Größe 1206) auf. Beginne mit den flachen Bauteilen (Widerstände, Kondensatoren) und arbeite dich zu den größeren Chips vor.
+3. **WICHTIG:** Verlöte das große Masse-Pad (Exposed Pad / EP) auf der Unterseite des ESP32-WROOM zwingend mit der Platine! Das ist nicht nur für die Erdung wichtig, sondern fungiert als essenzieller Kühlkörper. Ohne diese Verbindung überhitzt der Chip.
 
-### ⚡ Leistungselektronik & Kühlung
-| Bauteil / Bezeichnung | Menge | Beschreibung |
-| :--- | :--- | :--- |
-| **BC547B** | 1 | NPN-Transistor (Für die PWM-Steuerung des Lüfters) |
-| **1N5822** | 1 | Schottky-Diode (Freilaufdiode zum Schutz des Lüfter-Transistors) |
-| **5V Gehäuselüfter** | 1 | Für die aktive Kühlung des Gehäuses |
-| **Sicherungen (FUSE)** | 5 | RND 205-00232 SMD-Sicherungen (Für den 24V-Eingang und die LED-Zonen) |
+![Detailansicht SMD Komponenten 3D (EasyEDA)](Images/Screenshot 2026-03-08 100043.png)
 
-### 🧲 Passive Bauteile (Kondensatoren & Spulen)
-| Bauteil / Bezeichnung | Menge | Beschreibung |
-| :--- | :--- | :--- |
-| **1000µF / 50V Elko** | 2 | Pufferkondensatoren für die 24V Verstärker-Spannung |
-| **470µF / 50V Elko** | 4 | Pufferkondensatoren für die LED-Datenleitungen |
-| **12µH SMD-Spule** | 4 | Ausgangsfilter für den TPA3110 Verstärker |
-| **4.7µH SMD-Spule** | 1 | Für den Step-Down Schaltkreis |
-| **220nF Keramik**| 4 | Filter-Kondensatoren am Audio-Ausgang |
-| **100nF Keramik**| 12+ | Entkopplungskondensatoren (Über die Platine verteilt) |
-| **1µF Keramik** | 4 | Für den TPA3110 Audio-Eingang |
+### Schritt 2: ESPHome vorbereiten (Mainboard S3)
+Aus Sicherheitsgründen nutzt dieses Projekt ausgelagerte Passwörter. 
+1. Erstelle in deinem Home Assistant / ESPHome-Ordner eine neue Datei namens `secrets.yaml`.
+2. Füge exakt diese Struktur mit deinen eigenen, echten Daten ein:
+   ```yaml
+   api_encryption_key: "DEIN_API_KEY"
+   ota_password: "DEIN_OTA_PASSWORD"
+   wifi_ssid: "DEIN_WLAN_NAME"
+   wifi_password: "DEIN_WLAN_PASSWORT"
+   ap_password: "DEIN_FALLBACK_HOTSPOT_PASSWORT"
+   ```
+3. Lade die Datei `insane-sound-system-vX.yaml` aus dem Ordner `ESPHome/` in dein ESPHome-Dashboard hoch.
+4. Das Web-Interface Design (`insane-style.css`): Das Projekt bringt ein maßgeschneidertes Design für das lokale Web-Interface mit. Die benötigte Datei findest du in den heruntergeladenen Projektdateien im Ordner `webserver/`. 
+   * **Wichtig:** Diese CSS-Datei muss zwingend in exakt denselben Ordner auf deinem Server kopiert werden, in dem auch deine `.yaml`-Datei liegt (meistens `/config/esphome/` oder `/homeassistant/esphome/`).
+   * **Wie mache ich das?** Da das Standard-ESPHome-Dashboard keinen direkten Dateiupload für CSS-Dateien anbietet, nutzt du in Home Assistant am besten ein Add-on wie den **"File editor"**, **"Studio Code Server"** oder einen **"Filebrowser"**. Navigiere dort einfach in deinen ESPHome-Ordner und lade die `insane-style.css` direkt neben die `insane-sound-system-v5.yaml` hoch. Nur so bindet der Compiler das Design beim Flashen korrekt ein!
+5. Schließe den **ESP32-S3** per USB an deinen Rechner an und flashe ihn das allererste Mal ganz normal über das Kabel.
 
-### 🔌 Widerstände
-| Bauteil / Bezeichnung | Menge | Beschreibung |
-| :--- | :--- | :--- |
-| **10kΩ SMD** | 3+ | Pull-Up / Pull-Down (z. B. für den Lüfter oder den Amp-Gain) |
-| **22Ω - 33Ω SMD** | 6 | I2S-Terminierungswiderstände (Direkt an den TX-Pins von S3 und D1 Mini anbringen!) |
+<img src="Images/2.png" width="300" alt="Detailansicht 3D Komponenten">
+
+## 🚀 Das offizielle InsaneFlasher Tool (All-in-One)
+
+Schluss mit komplizierten Kommandozeilen! Das Insane Sound System V5 kommt jetzt mit einem eigenen, professionellen Hub für **Windows, macOS und Linux**.
+
+Der **InsaneFlasher** ist dein zentrales Dashboard zur Steuerung, Überwachung und Wartung deines Insane Sound System`s. Dank ZeroConf-Technologie findet das Tool dein Insane Sound System automatisch im Netzwerk.
+
+### ✨ Features des Tools
+* **Live Telemetrie-Dashboard:** Überwache Temperaturen (inkl. dynamischer Warn-Balken!), Audio-Quellen, WLAN-Signal und laufende Bluetooth-Metadaten in Echtzeit (1-Sekunden-Takt).
+* **One-Click OTA Flashing:** Update den internen Bluetooth-Chip (WROOM) komplett kabellos. Der Main-ESP32 (S3) fungiert als unsichtbare Bridge (`socket://<IP>:8888`) und flasht den WROOM über seine Hardware-Pins – kein USB-Kabel nötig!
+* **Automatischer Versions-Check:** Das Tool gleicht die WROOM-Firmware deiner Box automatisch mit GitHub ab und meldet sich, sobald ein Update bereitsteht.
+* **Favoriten-Speicher:** Speichere deine festen Insane Sound Systeme ab, um den Netzwerk-Scan beim nächsten Start zu überspringen.
+* **Hardware-Reset:** Zwinge den WROOM-Chip per Fernwartung zu einem sauberen Reboot, falls sich das Bluetooth mal aufhängt.
+
+### Schritt 3: Das Bluetooth-Modul flashen (mit dem InsaneFlasher)
+Sobald dein Mainboard (S3) im WLAN läuft, flashen wir den Bluetooth-Chip (WROOM) drahtlos:
+
+**🪟 Für Windows-Nutzer (Empfohlen):**
+1. Lade dir die neueste `InsaneFlasher.exe` aus dem `Updater/Windows/` Ordner herunter.
+2. Doppelklick auf die `.exe` – das Tool startet sofort (keine Installation nötig).
+
+**🍎/🐧 Für macOS & Linux Nutzer:**
+1. Stelle sicher, dass Python 3 auf deinem System installiert ist, und lade dir den Quellcode `InsaneFlasher.py` herunter.
+2. Installiere die nötigen Pakete im Terminal: `pip install customtkinter requests esptool zeroconf pillow`
+3. Starte das Tool: `python3 InsaneFlasher.py`
+
+**Der Flash-Vorgang:**
+Wähle dein Insane Sound System im Tool aus und klicke einfach auf den großen roten Button **"UPDATE JETZT INSTALLIEREN"**. Das Tool lädt automatisch die neueste Firmware herunter, bringt den Chip in den Flash-Modus, installiert das Update und startet das Insane Sound System neu. Lehn dich einfach zurück!
+
+**Glückwunsch! Dein Insane Sound System V5 ist jetzt voll einsatzbereit!**
+
+<img src="Images/5.png" width="800" alt="Finales 3D Rendering">
 
 ---
 
@@ -105,9 +114,24 @@ Das bedeutet: Nachbauen und Anpassen für private Zwecke ist ausdrücklich erwü
 
 ---
 
+## ☕ Support dieses Projekts
+V5 hat extrem viel Zeit, Nerven und Kaffee gekostet. Wenn dir das System gefällt und du meine Arbeit unterstützen möchtest, freue ich mich riesig über einen virtuellen Kaffee!
+
+<a href="https://www.paypal.me/babeinlovexd">
+  <img src="https://img.shields.io/badge/Donate-PayPal-blue.svg?style=for-the-badge&logo=paypal" alt="Donate mit PayPal">
+</a>
+
+Jeder Cent fließt direkt in die Entwicklung von V6 und neue Prototypen! 🚀
+---
+
 ## 👨‍💻 Entwickelt von
 
 | [<img src="https://avatars.githubusercontent.com/u/43302033?v=4" width="100"><br><sub>**Christopher**</sub>](https://github.com/babeinlovexd) |
 | :---: |
 
 ---
+
+
+
+
+
