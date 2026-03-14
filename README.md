@@ -60,6 +60,9 @@ Jeder kann dieses System bauen. Folge einfach stur diesen Schritten:
 2. Löte zuerst die SMD-Bauteile (Größe 1206) auf. Beginne mit den flachen Bauteilen (Widerstände, Kondensatoren) und arbeite dich zu den größeren Chips vor.
 3. **WICHTIG:** Verlöte das große Masse-Pad (Exposed Pad / EP) auf der Unterseite des ESP32-WROOM zwingend mit der Platine! Das ist nicht nur für die Erdung wichtig, sondern fungiert als essenzieller Kühlkörper. Ohne diese Verbindung überhitzt der Chip.
 
+### 🛠️ Bestückungshilfe
+Hier findest du die interaktive Stückliste (iBOM) für das Insane Sound System:
+<a href="https://htmlpreview.github.io/?https://github.com/babeinlovexd/Insane-ESPH/blob/main/BOM/ibom.html" target="_blank">👉 <b>Interaktive Bestückungshilfe</b></a>
 
 ### Schritt 2: ESPHome vorbereiten (Mainboard S3)
 Aus Sicherheitsgründen nutzt dieses Projekt ausgelagerte Passwörter. 
