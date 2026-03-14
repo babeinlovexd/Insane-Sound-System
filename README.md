@@ -67,7 +67,10 @@ Aus Sicherheitsgründen nutzt dieses Projekt ausgelagerte Passwörter.
    ap_password: "DEIN_FALLBACK_HOTSPOT_PASSWORT"
    ```
 3. Lade die Datei `insane-sound-system-vX.yaml` aus dem Ordner `ESPHome/` in dein ESPHome-Dashboard hoch.
-4. Schließe den **ESP32-S3** per USB an deinen Rechner an und flashe ihn das allererste Mal ganz normal über das Kabel.
+4. Das Web-Interface Design (`insane-style.css`): Das Projekt bringt ein maßgeschneidertes Design für das lokale Web-Interface mit. Die benötigte Datei findest du in den heruntergeladenen Projektdateien im Ordner `webserver/`. 
+   * **Wichtig:** Diese CSS-Datei muss zwingend in exakt denselben Ordner auf deinem Server kopiert werden, in dem auch deine `.yaml`-Datei liegt (meistens `/config/esphome/` oder `/homeassistant/esphome/`).
+   * **Wie mache ich das?** Da das Standard-ESPHome-Dashboard keinen direkten Dateiupload für CSS-Dateien anbietet, nutzt du in Home Assistant am besten ein Add-on wie den **"File editor"**, **"Studio Code Server"** oder einen **"Filebrowser"**. Navigiere dort einfach in deinen ESPHome-Ordner und lade die `insane-style.css` direkt neben die `insane-sound-system-v5.yaml` hoch. Nur so bindet der Compiler das Design beim Flashen korrekt ein!
+5. Schließe den **ESP32-S3** per USB an deinen Rechner an und flashe ihn das allererste Mal ganz normal über das Kabel.
 
 <img src="Images/2.png" width="300" alt="Detailansicht 3D Komponenten">
 
@@ -92,7 +95,7 @@ Sobald dein Mainboard (S3) im WLAN läuft, flashen wir den Bluetooth-Chip (WROOM
 2. Doppelklick auf die `.exe` – das Tool startet sofort (keine Installation nötig).
 
 **🍎/🐧 Für macOS & Linux Nutzer:**
-1. Lade dir den Quellcode `InsaneFlasher.py` herunter.
+1. Stelle sicher, dass Python 3 auf deinem System installiert ist, und lade dir den Quellcode `InsaneFlasher.py` herunter.
 2. Installiere die nötigen Pakete im Terminal: `pip install customtkinter requests esptool zeroconf pillow`
 3. Starte das Tool: `python3 InsaneFlasher.py`
 
