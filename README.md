@@ -53,7 +53,6 @@ Jeder kann dieses System bauen. Folge einfach stur diesen Schritten:
 2. Löte zuerst die SMD-Bauteile (Größe 1206) auf. Beginne mit den flachen Bauteilen (Widerstände, Kondensatoren) und arbeite dich zu den größeren Chips vor.
 3. **WICHTIG:** Verlöte das große Masse-Pad (Exposed Pad / EP) auf der Unterseite des ESP32-WROOM zwingend mit der Platine! Das ist nicht nur für die Erdung wichtig, sondern fungiert als essenzieller Kühlkörper. Ohne diese Verbindung überhitzt der Chip.
 
-![Detailansicht SMD Komponenten 3D (EasyEDA)](Images/Screenshot 2026-03-08 100043.png)
 
 ### Schritt 2: ESPHome vorbereiten (Mainboard S3)
 Aus Sicherheitsgründen nutzt dieses Projekt ausgelagerte Passwörter. 
@@ -66,7 +65,7 @@ Aus Sicherheitsgründen nutzt dieses Projekt ausgelagerte Passwörter.
    wifi_password: "DEIN_WLAN_PASSWORT"
    ap_password: "DEIN_FALLBACK_HOTSPOT_PASSWORT"
    ```
-3. Lade die Datei `insane-sound-system-vX.yaml` aus dem Ordner `ESPHome/` in dein ESPHome-Dashboard hoch.
+3. Lade die Datei `insane-sound-system-v5.yaml` aus dem Ordner `ESPHome/` in dein ESPHome-Dashboard hoch.
 4. Das Web-Interface Design (`insane-style.css`): Das Projekt bringt ein maßgeschneidertes Design für das lokale Web-Interface mit. Die benötigte Datei findest du in den heruntergeladenen Projektdateien im Ordner `webserver/`. 
    * **Wichtig:** Diese CSS-Datei muss zwingend in exakt denselben Ordner auf deinem Server kopiert werden, in dem auch deine `.yaml`-Datei liegt (meistens `/config/esphome/` oder `/homeassistant/esphome/`).
    * **Wie mache ich das?** Da das Standard-ESPHome-Dashboard keinen direkten Dateiupload für CSS-Dateien anbietet, nutzt du in Home Assistant am besten ein Add-on wie den **"File editor"**, **"Studio Code Server"** oder einen **"Filebrowser"**. Navigiere dort einfach in deinen ESPHome-Ordner und lade die `insane-style.css` direkt neben die `insane-sound-system-v5.yaml` hoch. Nur so bindet der Compiler das Design beim Flashen korrekt ein!
