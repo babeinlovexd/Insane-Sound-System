@@ -1,0 +1,76 @@
+# =======================================================
+# INSANE SOUND SYSTEM - FRONT PANEL ERWEITERUNG
+# =======================================================
+
+# 1. I2C Expander für die Tasten aktivieren (PCF8574)
+pcf8574:
+  - id: 'front_hub'
+    address: 0x20
+    pcf8575: false
+
+# 2. Die drei Hardware-Tasten (via I2C)
+binary_sensor:
+  - platform: gpio
+    name: "Front Taste 1 (Zurück)"
+    pin:
+      pcf8574: front_hub
+      number: 0
+      mode: INPUT_PULLUP
+      inverted: true
+    on_press:
+      - uart.write: "PREV\n"
+
+  - platform: gpio
+    name: "Front Taste 2 (Play/Pause)"
+    pin:
+      pcf8574: front_hub
+      number: 1
+      mode: INPUT_PULLUP
+      inverted: true
+    on_press:
+      - lambda: |-
+          if (id(media_status).state == "Wiedergabe") id(uart_bl).write_str("PAUSE\n");
+          else id(uart_bl).write_str("PLAY\n");
+
+  - platform: gpio
+    name: "Front Taste 3 (Vor)"
+    pin:
+      pcf8574: front_hub
+      number: 2
+      mode: INPUT_PULLUP
+      inverted: true
+    on_press:
+      - uart.write: "NEXT\n"
+
+# 3. Der Dreh-Encoder (an Expansion Header GPIO 43 & 44)
+sensor:
+  - platform: rotary_encoder
+    name: "Front Lautstärke"
+    pin_a: GPIO43
+    pin_b: GPIO44
+    on_clockwise:
+      - number.increment: bl_volume_slider
+    on_anticlockwise:
+      - number.decrement: bl_volume_slider
+
+# 4. Das OLED Display & Schriften (I2C)
+font:
+  - file: "gfonts://Roboto"
+    id: font_title
+    size: 16
+  - file: "gfonts://Roboto"
+    id: font_small
+    size: 10
+
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    address: 0x3C
+    lambda: |-
+      // Oben: Status (Links) & Lautstärke (Rechts)
+      it.printf(0, 0, id(font_small), "%s", id(media_status).state.c_str());
+      it.printf(128, 0, id(font_small), TextAlign::TOP_RIGHT, "Vol: %.0f", id(bl_volume_slider).state);
+      
+      // Mitte: Titel und Interpret (Universell für WLAN & Bluetooth!)
+      it.printf(64, 25, id(font_title), TextAlign::CENTER, "%s", id(media_title).state.c_str());
+      it.printf(64, 45, id(font_small), TextAlign::CENTER, "%s", id(media_artist).state.c_str());
