@@ -8,6 +8,8 @@
 </div>
 <br>
 
+🌍 **[Read this in English](README_en.md)**
+
 Willkommen beim **Insane Sound System V5** dem ultimativen, smarten High-End WLAN & Bluetooth Lautsprecher-Controller!
 
 Monatelange Entwicklung, unzählige Prototypen, Schweiß, Tränen und der unbändige Wille, die absolut perfekte Audio-Zentrale zu erschaffen, sind in diese Platine geflossen. Das **Insane Sound System V5** ist das ultimative Resultat dieses Wahnsinns. 
