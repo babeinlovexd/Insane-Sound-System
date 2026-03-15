@@ -1,0 +1,41 @@
+external_components:
+  - source:
+      type: git
+      url: https://github.com/babeinlovexd/esph-ws2805
+      ref: main
+    components: [ ws2805 ]
+
+light:
+  - platform: ws2805
+    name: "Licht Zone 1"
+    id: light_1
+    pin: GPIO4
+    num_leds: 30
+    gamma_correct: 2.2    
+    effects: &effekte 
+      - addressable_rainbow:
+          name: "Regenbogen"
+      - addressable_color_wipe:
+          name: "Wisch-Effekt"
+      - addressable_scan:
+          name: "Knight Rider"
+      - addressable_twinkle:
+          name: "Funkeln"
+      - addressable_fireworks:
+          name: "Feuerwerk"
+
+  - platform: ws2805
+    name: "Licht Zone 2"
+    id: light_2        
+    pin: GPIO5
+    num_leds: 30
+    gamma_correct: 2.2     
+    effects: *effekte
+
+  - platform: ws2805
+    name: "Licht Zone 3"
+    id: light_3        
+    pin: GPIO6
+    num_leds: 30
+    gamma_correct: 2.2      
+    effects: *effekte

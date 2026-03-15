@@ -1,0 +1,40 @@
+light:
+  - platform: esp32_rmt_led_strip
+    name: "Licht Zone 1"
+    id: light_1
+    pin: GPIO4
+    num_leds: 30
+    chipset: WS2812
+    rgb_order: BRG
+    rmt_symbols: 48    
+    effects: &effekte 
+      - addressable_rainbow:
+          name: "Regenbogen"
+      - addressable_color_wipe:
+          name: "Wisch-Effekt"
+      - addressable_scan:
+          name: "Knight Rider"
+      - addressable_twinkle:
+          name: "Funkeln"
+      - addressable_fireworks:
+          name: "Feuerwerk"
+
+  - platform: esp32_rmt_led_strip
+    name: "Licht Zone 2"
+    id: light_2        
+    pin: GPIO5
+    num_leds: 30
+    chipset: WS2812
+    rgb_order: BRG
+    rmt_symbols: 48    
+    effects: *effekte
+
+  - platform: esp32_rmt_led_strip
+    name: "Licht Zone 3"
+    id: light_3        
+    pin: GPIO6
+    num_leds: 30
+    chipset: WS2812
+    rgb_order: BRG
+    rmt_symbols: 48    
+    effects: *effekte
