@@ -290,7 +290,7 @@ switch:
     restore_mode: ALWAYS_OFF 
 
   - platform: gpio
-    pin: GPIO11  # S3 Pin 18 (Label: GPIO12)
+    pin: GPIO11  # S3  (Label: GPIO11)
     name: "Insane Turbo Mode"
     id: insane_mode
     restore_mode: ALWAYS_OFF
