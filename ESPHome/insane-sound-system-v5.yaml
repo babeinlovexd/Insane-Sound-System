@@ -579,6 +579,18 @@ text_sensor:
 # AUTOMATISIERUNG & INTERVALLE
 # ##############################################################################
 script:
+  - id: fan_kickstart
+    mode: restart
+    parameters:
+      target_speed: int
+    then:
+      - delay: 1s
+      - lambda: |-
+          auto call = id(the_fan).make_call();
+          call.set_state(true);
+          call.set_speed(target_speed);
+          call.perform();
+
   - id: update_status_led
     mode: restart 
     then:
@@ -638,12 +650,26 @@ interval:
             if (speed_pct > 1.0) speed_pct = 1.0;
             if (speed_pct < 0.3) speed_pct = 0.3; 
 
-            auto call = id(the_fan).make_call();
-            call.set_state(true);
             int steps = id(the_fan).get_traits().supported_speed_count();
-            call.set_speed((int)(speed_pct * steps));
-            call.perform();
-            ESP_LOGD("custom_fan", "Max Temp: %.1f°C -> Lüfter: %.0f%%", max_temp, speed_pct * 100);
+            int target_speed = (int)(speed_pct * steps);
+
+            if (!id(the_fan).state) {
+              // Kickstart if fan is currently off
+              auto call = id(the_fan).make_call();
+              call.set_state(true);
+              call.set_speed(steps); // 100%
+              call.perform();
+              ESP_LOGD("custom_fan", "Max Temp: %.1f°C -> Lüfter KICKSTART (100%%)", max_temp);
+
+              id(fan_kickstart).execute(target_speed);
+            } else {
+              // Normal speed update
+              auto call = id(the_fan).make_call();
+              call.set_state(true);
+              call.set_speed(target_speed);
+              call.perform();
+              ESP_LOGD("custom_fan", "Max Temp: %.1f°C -> Lüfter: %.0f%%", max_temp, speed_pct * 100);
+            }
           } else {
             if (id(the_fan).state) {
               id(the_fan).turn_off();
