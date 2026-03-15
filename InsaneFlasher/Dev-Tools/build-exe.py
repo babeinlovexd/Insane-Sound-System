@@ -16,10 +16,10 @@ def build_insane_flasher():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     os.chdir(script_dir)
 
-    script_name = "InsaneFlasher.py"
+    script_name = "../Linux_Mac/InsaneFlasher.py"
     exe_name = "InsaneFlasher"
-    icon_file = "logo.ico"
-    png_file = "logo.png"
+    icon_file = "../Linux_Mac/logo.ico"
+    png_file = "../Linux_Mac/logo.png"
 
     print(f"--- Starte Build-Prozess für {exe_name} ---")
     print(f"Arbeitsverzeichnis: {os.getcwd()}")
@@ -34,8 +34,11 @@ def build_insane_flasher():
             input("\nDrücke Enter zum Beenden...")
             return
 
+    # On non-Windows platforms (where 'py' command is missing), fallback to 'python' or 'python3'
+    py_cmd = "py" if os.name == 'nt' else sys.executable
+
     cmd = [
-        "py", "-m", "PyInstaller",
+        py_cmd, "-m", "PyInstaller",
         "-y",               
         "--noconsole",
         "--onefile",

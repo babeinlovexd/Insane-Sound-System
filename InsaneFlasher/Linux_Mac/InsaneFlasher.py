@@ -521,9 +521,10 @@ class InsaneFlasher(ctk.CTk):
             self.after(0, lambda e=e: messagebox.showerror("Netzwerk Fehler", f"Verbindungsproblem:\n{e}"))
             
         except SystemExit as e:
-            if e.code != 0:
+            if e.code is not None and e.code != 0:
                 self.after(0, lambda: self.status_label.configure(text="❌ Fehler beim Flashen!", text_color="red"))
                 self.after(0, lambda: messagebox.showerror("Flash Fail", "Flashen durch esptool abgebrochen."))
+                return # Stop execution if there is an error
                 
         except Exception as e:
             self.after(0, lambda: self.status_label.configure(text="❌ Fehler!", text_color="red"))
