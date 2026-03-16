@@ -3,7 +3,7 @@ light:
   - platform: neopixelbus
     name: "Licht Zone 1"
     id: light_1        
-    pin: GPIO5
+    pin: GPIO4
     num_leds: 30
     variant: SK6812
     type: RGBW   
@@ -43,9 +43,8 @@ light:
     pin: GPIO48
     internal: true
     num_leds: 1
-    chipset: WS2812
-    rgb_order: GRB     
-    rmt_symbols: 48    
+    variant: WS2812     
+    type: GRB        
     effects: 
       - strobe:
           name: "Error_Blink" 
