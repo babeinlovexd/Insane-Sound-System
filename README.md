@@ -82,7 +82,10 @@ Aus Sicherheitsgründen nutzt dieses Projekt ausgelagerte Passwörter.
 4. Das Web-Interface Design (`insane-style.css`): Das Projekt bringt ein maßgeschneidertes Design für das lokale Web-Interface mit. Die benötigte Datei findest du in den heruntergeladenen Projektdateien im Ordner `webserver/`. 
    * **Wichtig:** Diese CSS-Datei muss zwingend in exakt denselben Ordner auf deinem Server kopiert werden, in dem auch deine `.yaml`-Datei liegt (meistens `/config/esphome/` oder `/homeassistant/esphome/`).
    * **Wie mache ich das?** Da das Standard-ESPHome-Dashboard keinen direkten Dateiupload für CSS-Dateien anbietet, nutzt du in Home Assistant am besten ein Add-on wie den **"File editor"**, **"Studio Code Server"** oder einen **"Filebrowser"**. Navigiere dort einfach in deinen ESPHome-Ordner und lade die `insane-style.css` direkt neben die `insane-sound-system-v5.yaml` hoch. Nur so bindet der Compiler das Design beim Flashen korrekt ein!
-5. Schließe den **ESP32-S3** per USB an deinen Rechner an und flashe ihn das allererste Mal ganz normal über das Kabel.
+5. **LEDs und Front-Panel aktivieren (Packages):** In der `insane-sound-system-v5.yaml` findest du ganz oben unter `packages:` Konfigurationsblöcke für verschiedene LED-Streifen (WS2811, WS2814, WS2805) sowie das optionale Front-Panel.
+   * **LEDs:** Markiere den Block des LED-Typs, den du nutzt, und entferne die Rauten (`#`) am Anfang der Zeilen (Tipp: Block markieren und `Strg` + `#` drücken). Es darf **nur ein** LED-Block gleichzeitig aktiv sein!
+   * **Front-Panel (Optional):** Falls du die Frontpanel-Erweiterung (OLED & Tasten) nutzt, entferne auf dieselbe Weise die Rauten vor `frontpanel:`, `url:` und `file:`.
+6. Schließe den **ESP32-S3** per USB an deinen Rechner an und flashe ihn das allererste Mal ganz normal über das Kabel.
 
 <img src="Images/2.png" width="300" alt="Detailansicht 3D Komponenten">
 
@@ -103,12 +106,12 @@ Der **InsaneFlasher** ist dein zentrales Dashboard zur Steuerung, Überwachung u
 Sobald dein Mainboard (S3) im WLAN läuft, flashen wir den Bluetooth-Chip (WROOM) drahtlos:
 
 **🪟 Für Windows-Nutzer (Empfohlen):**
-1. Lade dir die neueste `InsaneFlasher.exe` aus dem `Updater/Windows/` Ordner herunter.
+1. Lade dir die neueste `InsaneFlasher.exe` aus dem `InsaneFlasher/Windows/` Ordner herunter.
 2. Doppelklick auf die `.exe` – das Tool startet sofort (keine Installation nötig).
 
 **🍎/🐧 Für macOS & Linux Nutzer:**
-1. Stelle sicher, dass Python 3 auf deinem System installiert ist, und lade dir den Quellcode `InsaneFlasher.py` herunter.
-2. Installiere die nötigen Pakete im Terminal: `pip install customtkinter requests esptool zeroconf pillow`
+1. Stelle sicher, dass Python 3 auf deinem System installiert ist, und lade dir den Quellcode `InsaneFlasher.py` aus dem `InsaneFlasher/Linux_Mac/` Ordner herunter.
+2. Installiere die nötigen Pakete im Terminal: `pip install customtkinter requests esptool zeroconf pillow packaging`
 3. Starte das Tool: `python3 InsaneFlasher.py`
 
 **Der Flash-Vorgang:**

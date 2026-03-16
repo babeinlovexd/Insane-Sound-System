@@ -82,7 +82,10 @@ For security reasons, this project uses externalized passwords.
 4. The Web-Interface Design (`insane-style.css`): The project comes with a custom design for the local web interface. You will find the required file in the downloaded project files in the `webserver/` folder.
    * **Important:** This CSS file must absolutely be copied into exactly the same folder on your server where your `.yaml` file is located (usually `/config/esphome/` or `/homeassistant/esphome/`).
    * **How do I do that?** Since the standard ESPHome dashboard doesn't offer a direct file upload for CSS files, it is best to use an add-on like the **"File editor"**, **"Studio Code Server"**, or a **"Filebrowser"** in Home Assistant. Simply navigate to your ESPHome folder there and upload the `insane-style.css` right next to the `insane-sound-system-v5.yaml`. Only then will the compiler correctly embed the design when flashing!
-5. Connect the **ESP32-S3** to your computer via USB and flash it normally via the cable for the very first time.
+5. **Activate LEDs and Front Panel (Packages):** In the `insane-sound-system-v5.yaml` file, near the top under `packages:`, you will find configuration blocks for different LED strips (WS2811, WS2814, WS2805) and the optional Front Panel.
+   * **LEDs:** Highlight the block corresponding to the LED type you are using and remove the hash (`#`) symbols at the beginning of the lines (Tip: Select the block and press `Ctrl` + `#`). **Only one** LED block can be active at a time!
+   * **Front Panel (Optional):** If you are using the front panel extension (OLED & Buttons), remove the hash symbols in the same way before `frontpanel:`, `url:` and `file:`.
+6. Connect the **ESP32-S3** to your computer via USB and flash it normally via the cable for the very first time.
 
 <img src="Images/2.png" width="300" alt="Detailed View 3D Components">
 
@@ -103,12 +106,12 @@ The **InsaneFlasher** is your central dashboard to control, monitor, and maintai
 As soon as your mainboard (S3) runs in Wi-Fi, we flash the Bluetooth chip (WROOM) wirelessly:
 
 **🪟 For Windows Users (Recommended):**
-1. Download the latest `InsaneFlasher.exe` from the `Updater/Windows/` folder.
+1. Download the latest `InsaneFlasher.exe` from the `InsaneFlasher/Windows/` folder.
 2. Double-click on the `.exe` - the tool starts immediately (no installation required).
 
 **🍎/🐧 For macOS & Linux Users:**
-1. Make sure Python 3 is installed on your system, and download the source code `InsaneFlasher.py`.
-2. Install the necessary packages in the terminal: `pip install customtkinter requests esptool zeroconf pillow`
+1. Make sure Python 3 is installed on your system, and download the source code `InsaneFlasher.py` from the `InsaneFlasher/Linux_Mac/` folder.
+2. Install the necessary packages in the terminal: `pip install customtkinter requests esptool zeroconf pillow packaging`
 3. Start the tool: `python3 InsaneFlasher.py`
 
 **The Flash Process:**
