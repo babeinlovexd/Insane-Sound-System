@@ -1,11 +1,12 @@
 light:
 
-  - platform: ws2805
+  - platform: neopixelbus
     name: "Licht Zone 1"
-    id: light_1
-    pin: GPIO4
+    id: light_1        
+    pin: GPIO5
     num_leds: 30
-    gamma_correct: 2.2    
+    variant: SK6812
+    type: RGBW   
     effects: &effekte 
       - addressable_rainbow:
           name: "Regenbogen"
