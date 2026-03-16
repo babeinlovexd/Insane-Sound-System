@@ -35,3 +35,37 @@ light:
     variant: SK6812
     type: RGBW    
     effects: *effekte
+
+  - platform: neopixelbus
+    name: "Mainboard Status LED"
+    id: status_led
+    pin: GPIO48
+    internal: true
+    num_leds: 1
+    chipset: WS2812
+    rgb_order: GRB     
+    rmt_symbols: 48    
+    effects: 
+      - strobe:
+          name: "Error_Blink" 
+          colors:
+            - state: true
+              red: 100%
+              green: 0%
+              blue: 0%
+              duration: 500ms
+            - state: false
+              duration: 500ms
+      - strobe:
+          name: "Amp_Fault" 
+          colors:
+            - state: true
+              red: 100%
+              green: 0%
+              blue: 0%
+              duration: 200ms
+            - state: true
+              red: 100%
+              green: 100%
+              blue: 0% 
+              duration: 200ms
