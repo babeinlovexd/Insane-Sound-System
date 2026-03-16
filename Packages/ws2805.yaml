@@ -40,8 +40,7 @@ light:
     internal: true
     num_leds: 1
     variant: WS2812     
-    type: GRB 
-    method: BIT_BANG     
+    type: GRB    
     effects: 
       - strobe:
           name: "Error_Blink" 
