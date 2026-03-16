@@ -7,6 +7,7 @@ light:
     num_leds: 30
     variant: SK6812
     type: RGBW   
+    method: ESP32_RMT_0
     effects: &effekte 
       - addressable_rainbow:
           name: "Regenbogen"
@@ -26,6 +27,7 @@ light:
     num_leds: 30
     variant: SK6812
     type: RGBW   
+    method: ESP32_RMT_1
     effects: *effekte
 
   - platform: neopixelbus
@@ -35,6 +37,7 @@ light:
     num_leds: 30
     variant: SK6812
     type: RGBW    
+    method: ESP32_RMT_2
     effects: *effekte
 
   - platform: neopixelbus
@@ -44,7 +47,8 @@ light:
     internal: true
     num_leds: 1
     variant: WS2812     
-    type: GRB        
+    type: GRB      
+    method: ESP32_RMT_3  
     effects: 
       - strobe:
           name: "Error_Blink" 
