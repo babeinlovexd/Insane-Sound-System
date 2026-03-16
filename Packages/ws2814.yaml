@@ -48,8 +48,7 @@ light:
     pin: GPIO48
     internal: true
     num_leds: 1
-    chipset: WS2812     
-    is_rgbw: false
+    chipset: WS2812 
     rgb_order: GRB  
     rmt_symbols: 48      
     effects: 
