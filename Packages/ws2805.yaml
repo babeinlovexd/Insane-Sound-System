@@ -1,10 +1,3 @@
-external_components:
-  - source:
-      type: git
-      url: https://github.com/babeinlovexd/esph-ws2805
-      ref: main
-    components: [ ws2805 ]
-
 light:
   - platform: ws2805
     name: "Licht Zone 1"
