@@ -1,11 +1,12 @@
 light:
   - platform: neopixelbus
-    name: "Licht Zone 1"
-    id: light_1
-    pin: GPIO4
-    num_leds: 30
-    variant: SK6812
-    type: RGBW   
+    name: "Mainboard Status LED"
+    id: status_led
+    pin: GPIO48
+    internal: true
+    num_leds: 1
+    variant: WS2812     
+    type: GRB   
     effects: &effekte 
       - addressable_rainbow:
           name: "Regenbogen"

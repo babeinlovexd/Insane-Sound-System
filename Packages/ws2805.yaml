@@ -46,9 +46,8 @@ light:
     pin: GPIO48
     internal: true
     num_leds: 1
-    chipset: WS2812
-    rgb_order: GRB     
-    rmt_symbols: 48    
+    variant: WS2812     
+    type: GRB        
     effects: 
       - strobe:
           name: "Error_Blink" 
