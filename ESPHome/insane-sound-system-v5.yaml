@@ -7,7 +7,7 @@
 # - GPIO 17          : I2S DATA (WLAN/HA) -> Mux Eingang 3B2
 # - GPIO 18          : Mux Select         -> LOW = Bluetooth (B1), HIGH = WLAN/HA (B2)
 #
-# [BLUETOOTH KOMMUNIKATION & FLASHING - WROOM-32E]
+# [BLUETOOTH KOMMUNIKATION & FLASHING - WROOM-32D]
 # - GPIO 3           : Music Status In    <- Von WROOM GPIO 14 (Triggert den Mux)
 # - GPIO 1           : UART TX Out        -> Zu WROOM RX0 (GPIO 3) (via 470 Ohm)
 # - GPIO 2           : UART RX In         <- Von WROOM TX0 (GPIO 1) (via 470 Ohm)
@@ -36,9 +36,9 @@
 # - GPIO 33 bis 37   : RESERVIERT         -> NICHT NUTZEN! (Für 8MB Octal PSRAM)
 #
 # ##############################################################################
-# HARDWARE-PIN-BELEGUNG V5 (Bluetooth Chip ESP32-WROOM-32E):
+# HARDWARE-PIN-BELEGUNG V5 (Bluetooth Chip ESP32-WROOM-32D):
 #
-# [STROMVERSORGUNG & SYSTEM (SMD 1206)]
+# [STROMVERSORGUNG & SYSTEM]
 # - 3V3 Pin          : Power In           <- Von AMS1117-3.3 (mit 10µF & 100nF Kerkos)
 # - GND Pins         : Masse              -> An Ground-Plane (Bodenpad zwingend verlöten!)
 # - EN Pin           : Reset-Logik        <- Von S3 GPIO 7 (via 1k Ohm) 
@@ -55,28 +55,50 @@
 # - GPIO 25          : I2S LRCK (WS)      -> Mux Eingang 2B1
 # - GPIO 26          : I2S DATA (DOUT)    -> Mux Eingang 3B1
 # - GPIO 14          : Music Status Out   -> Zu S3 GPIO 3 (HIGH = Play, LOW = Pause/Offline)
-#
-# ##############################################################################
-# OPTIONAL: FRONT-PANEL ERWEITERUNG (OLED & Tasten)
-# Entferne die # Raute bei 
-#
-#           --->#packages:
-#           --->#  frontpanel: !include insane-frontpanel.yaml 
-#
-# um die Erweiterung zu aktivieren!
-#
-# | | | | | | | | | | | | | | | | | | | | | | |
-# v v v v v v v v v v v v v v v v v v v v v v v 
-# packages:
-#   frontpanel: !include insane-frontpanel.yaml
 # ##############################################################################
 
+# =====================================================================
+# 🚩USER-KONFIGURATION (Hier die Entität vom ISS anpassen, falls nötig!)🚩
+# =====================================================================
 substitutions:
-  # =======================================================
-  # USER-KONFIGURATION (Hier die Entität vom ISS anpassen, falls nötig!)
-  # =======================================================
-  ha_player_id: "media_player.insane_sound_system"
-
+  ha_player_id: "media_player.insane_sound_system" #<---- ID hier anpassen!
+# ##############################################################################
+packages:
+# ##############################################################################
+# 🌈 LED-STRIP AUSWAHL                                                  🌈
+# 🌈        (Bitte nur EINEN Block aktivieren / Rauten # entfernen!)    🌈
+# 🌈        (TIPP= Block makrieren und dann Strg + #)                   🌈
+# ##############################################################################
+# ---------------------------------------------------------- 
+# ---> WS2811 (WS2812/WS2812B, WS2813/WS2815, SM16703)  (3-Kanal RGB)
+  # led_setup:
+  #   url: https://github.com/babeinlovexd/Insane-Sound-System
+  #   file: Packages/ws2811.yaml
+  #   refresh: 0s
+# ---------------------------------------------------------- 
+# ---> WS2814 (SK6812, TM1814)(4-Kanal RGBW)
+  # led_setup:
+  #   url: https://github.com/babeinlovexd/Insane-Sound-System
+  #   file: Packages/ws2814.yaml
+  #   refresh: 0s
+# ---------------------------------------------------------- 
+# ---> WS2805 (5-Kanal RGBCCT)
+  led_setup:
+    url: https://github.com/babeinlovexd/Insane-Sound-System
+    file: Packages/ws2805.yaml
+    refresh: 0s
+# ---------------------------------------------------------- 
+# ##############################################################################
+# 🧬OPTIONAL: FRONT-PANEL ERWEITERUNG (OLED & Tasten)                      🧬
+# 🧬          Wenn vorhanden bitte vor   frontpanel:   Raute # entfernen!  🧬
+# 🧬                                       url:                            🧬
+# 🧬                                       file:                           🧬
+# ##############################################################################
+# ----------------------------------------------------------
+  # frontpanel:
+  #   url: https://github.com/babeinlovexd/Insane-Sound-System
+  #   file: Packages/insane-frontpanel.yaml
+# ----------------------------------------------------------
 # ##############################################################################
 
 esphome:
@@ -84,7 +106,7 @@ esphome:
   friendly_name: "Insane Sound System V5"
   project:
     name: "babeinlovexd.insane_sound_system"
-    version: "5.1"
+    version: "5.2"
   on_boot:
     priority: 800 
     then:
@@ -100,7 +122,6 @@ esphome:
           state: "0.0"
       - delay: 5s 
       - script.execute: update_status_led
-      
 
 esp32:
   board: esp32-s3-devkitc-1
@@ -111,9 +132,12 @@ esp32:
 
 external_components:
   - source: github://oxan/esphome-stream-server
-  - source: 
-      type: local
-      path: custom_components
+  - source:
+      type: git
+      url: https://github.com/babeinlovexd/esph-ws2805
+      ref: main
+    components: [ ws2805 ]
+    refresh: 0s
 
 psram:
   mode: octal
@@ -197,85 +221,11 @@ media_player:
     on_idle:
       - switch.turn_off: amp_power
       - script.execute: update_status_led
-
 # ##############################################################################
-# BELEUCHTUNG (WS2811)
+# BELEUCHTUNG 
 # ##############################################################################
 
-light:
-  - platform: esp32_rmt_led_strip
-    name: "Licht Zone 1"
-    id: light_1
-    pin: GPIO4
-    num_leds: 30
-    chipset: WS2812
-    rgb_order: BRG
-    rmt_symbols: 48    
-    effects: &effekte 
-      - addressable_rainbow:
-          name: "Regenbogen"
-      - addressable_color_wipe:
-          name: "Wisch-Effekt"
-      - addressable_scan:
-          name: "Knight Rider"
-      - addressable_twinkle:
-          name: "Funkeln"
-      - addressable_fireworks:
-          name: "Feuerwerk"
-
-  - platform: esp32_rmt_led_strip
-    name: "Licht Zone 2"
-    id: light_2        
-    pin: GPIO5
-    num_leds: 30
-    chipset: WS2812
-    rgb_order: BRG
-    rmt_symbols: 48    
-    effects: *effekte
-
-  - platform: esp32_rmt_led_strip
-    name: "Licht Zone 3"
-    id: light_3        
-    pin: GPIO6
-    num_leds: 30
-    chipset: WS2812
-    rgb_order: BRG
-    rmt_symbols: 48    
-    effects: *effekte
-
-  - platform: esp32_rmt_led_strip
-    name: "Mainboard Status LED"
-    id: status_led
-    pin: GPIO48
-    internal: true
-    num_leds: 1
-    chipset: WS2812
-    rgb_order: GRB     
-    rmt_symbols: 48    
-    effects: 
-      - strobe:
-          name: "Error_Blink" 
-          colors:
-            - state: true
-              red: 100%
-              green: 0%
-              blue: 0%
-              duration: 500ms
-            - state: false
-              duration: 500ms
-      - strobe:
-          name: "Amp_Fault" 
-          colors:
-            - state: true
-              red: 100%
-              green: 0%
-              blue: 0%
-              duration: 200ms
-            - state: true
-              red: 100%
-              green: 100%
-              blue: 0% 
-              duration: 200ms
+# Wird komplett aus den Packages geladen!
 
 # ##############################################################################
 # HARDWARE STEUERUNG (Switches, Buttons & Lüfter)
@@ -290,7 +240,7 @@ switch:
     restore_mode: ALWAYS_OFF 
 
   - platform: gpio
-    pin: GPIO11  # S3  (Label: GPIO11)
+    pin: GPIO11  # S3 Pin 18 (Label: GPIO12)
     name: "Insane Turbo Mode"
     id: insane_mode
     restore_mode: ALWAYS_OFF
@@ -532,7 +482,7 @@ text_sensor:
     id: bl_version
     icon: "mdi:chip"
 
-  # --- 2. Die unsichtbaren Brücken zu Home Assistant ---
+  # --- 2. Die Brücken zu Home Assistant ---
   - platform: homeassistant
     id: ha_title_bridge
     entity_id: ${ha_player_id}
