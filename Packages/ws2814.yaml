@@ -6,7 +6,7 @@ light:
     num_leds: 30
     chipset: SK6812
     is_rgbw: true
-    rgb_order: RGBW  
+    rgb_order: RGB  
     rmt_symbols: 48     
     effects: &effekte 
       - addressable_rainbow:
@@ -27,7 +27,7 @@ light:
     num_leds: 30
     chipset: SK6812
     is_rgbw: true
-    rgb_order: RGBW 
+    rgb_order: RGB 
     rmt_symbols: 48      
     effects: *effekte
 
@@ -38,7 +38,7 @@ light:
     num_leds: 30
     chipset: SK6812
     is_rgbw: true
-    rgb_order: RGBW 
+    rgb_order: RGB
     rmt_symbols: 48      
     effects: *effekte
 
