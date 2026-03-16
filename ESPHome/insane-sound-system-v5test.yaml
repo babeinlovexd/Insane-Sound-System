@@ -1,0 +1,645 @@
+# ##############################################################################
+# HARDWARE-PIN-BELEGUNG V5 (Main ESP32-S3):
+#
+# [AUDIO & MULTIPLEXER - SN74CB3Q3257]
+# - GPIO 15          : I2S BCK  (WLAN/HA) -> Mux Eingang 1B2
+# - GPIO 16          : I2S LRCK (WLAN/HA) -> Mux Eingang 2B2
+# - GPIO 17          : I2S DATA (WLAN/HA) -> Mux Eingang 3B2
+# - GPIO 18          : Mux Select         -> LOW = Bluetooth (B1), HIGH = WLAN/HA (B2)
+#
+# [BLUETOOTH KOMMUNIKATION & FLASHING - WROOM-32E]
+# - GPIO 3           : Music Status In    <- Von WROOM GPIO 14 (Triggert den Mux)
+# - GPIO 1           : UART TX Out        -> Zu WROOM RX0 (GPIO 3) (via 470 Ohm)
+# - GPIO 2           : UART RX In         <- Von WROOM TX0 (GPIO 1) (via 470 Ohm)
+# - GPIO 7           : WROOM EN (Reset)   -> Zu WROOM EN-Pin (via 1k Ohm)
+# - GPIO 39          : WROOM IO0 (Boot)   -> Zu WROOM IO0-Pin (via 1k Ohm)
+#
+# [VERSTÄRKER STEUERUNG - TPA3110]
+# - GPIO 10          : Amp Power (SD)     -> HIGH = An, LOW = Aus (Standby)
+# - GPIO 11          : Gain (Turbo)       -> Insane Mode Switch (Inverted Logik)
+# - GPIO 12          : Amp Fault In       <- Störungsmeldung vom TPA3110 (Pull-Up)
+#
+# [BELEUCHTUNG - WS2811 ZONEN via Level Shifter]
+# - GPIO 4           : LED Zone 1 Daten   -> Zum SN74AHCT125 Level Shifter
+# - GPIO 5           : LED Zone 2 Daten   -> Zum SN74AHCT125 Level Shifter
+# - GPIO 6           : LED Zone 3 Daten   -> Zum SN74AHCT125 Level Shifter
+# - GPIO 48          : LED                -> Onboard  
+#
+# [KLIMA & SENSOREN]
+# - GPIO 42          : Lüfter PWM Out     -> Steuert 24V Gehäuselüfter 
+# - GPIO 8           : I2C SDA            -> Temp-Sensoren & Expansion
+# - GPIO 9           : I2C SCL            -> Temp-Sensoren & Expansion
+#
+# [SYSTEM, DEBUGGING & SPEICHER]
+# - GPIO 43          : UART TX0           -> Debugging (Expansion Header)
+# - GPIO 44          : UART RX0           -> Debugging (Expansion Header)
+# - GPIO 33 bis 37   : RESERVIERT         -> NICHT NUTZEN! (Für 8MB Octal PSRAM)
+#
+# ##############################################################################
+# HARDWARE-PIN-BELEGUNG V5 (Bluetooth Chip ESP32-WROOM-32E):
+#
+# [STROMVERSORGUNG & SYSTEM (SMD 1206)]
+# - 3V3 Pin          : Power In           <- Von AMS1117-3.3 (mit 10µF & 100nF Kerkos)
+# - GND Pins         : Masse              -> An Ground-Plane (Bodenpad zwingend verlöten!)
+# - EN Pin           : Reset-Logik        <- Von S3 GPIO 7 (via 1k Ohm) 
+#                                            (+ 10k Pull-Up zu 3.3V & 1µF Kerko zu GND)
+# - IO0 (GPIO 0)     : Flash-Trigger      <- Von S3 GPIO 39 (via 1k Ohm) 
+#                                            (+ 10k Pull-Up zu 3.3V)
+#
+# [KOMMUNIKATION & ON-BOARD FLASHING (UART0)]
+# - GPIO 3 (RX0)     : Daten/Flash Empfang<- Von S3 GPIO 1 (TX) (via 470 Ohm)
+# - GPIO 1 (TX0)     : Daten/Meta Senden  -> Zu S3 GPIO 2 (RX) (via 470 Ohm)
+#
+# [AUDIO & MULTIPLEXER]
+# - GPIO 27          : I2S BCK            -> Mux Eingang 1B1
+# - GPIO 25          : I2S LRCK (WS)      -> Mux Eingang 2B1
+# - GPIO 26          : I2S DATA (DOUT)    -> Mux Eingang 3B1
+# - GPIO 14          : Music Status Out   -> Zu S3 GPIO 3 (HIGH = Play, LOW = Pause/Offline)
+# ##############################################################################
+
+# =====================================================================
+# 🚩USER-KONFIGURATION (Hier die Entität vom ISS anpassen, falls nötig!)🚩
+# =====================================================================
+substitutions:
+  ha_player_id: "media_player.insane_sound_system" #<---- ID hier anpassen!
+# ##############################################################################
+packages:
+# ##############################################################################
+# 🌈 LED-STRIP AUSWAHL                                                  🌈
+# 🌈        (Bitte nur EINEN Block aktivieren / Rauten # entfernen!)    🌈
+# 🌈        (TIPP= Block makrieren und dann Strg + #)                   🌈
+# ##############################################################################
+# ---------------------------------------------------------- 
+# ---> WS2811 (WS2812/WS2812B, WS2813/WS2815, SK6812, SM16703)  (3-Kanal RGB)
+  led_setup:
+    url: https://github.com/babeinlovexd/Insane-Sound-System
+    file: Packages/ws2811.yaml
+    refresh: 0s
+# ---------------------------------------------------------- 
+# ---> WS2814 (SK6812, TM1814)(4-Kanal RGBW)
+  # led_setup:
+  #   url: https://github.com/babeinlovexd/Insane-Sound-System
+  #   file: Packages/ws2814.yaml
+  #   refresh: 0s
+# ---------------------------------------------------------- 
+# ---> WS2805 (5-Kanal RGBCCT)
+  # led_setup:
+  #   url: https://github.com/babeinlovexd/Insane-Sound-System
+  #   file: Packages/ws2805.yaml
+  #   refresh: 0s
+# ---------------------------------------------------------- 
+# ##############################################################################
+# 🧬OPTIONAL: FRONT-PANEL ERWEITERUNG (OLED & Tasten)                   🧬
+# 🧬          Wenn vorhanden bitte vor frontpanel: Raute # entfernen!   🧬
+# ##############################################################################
+# ----------------------------------------------------------
+  #frontpanel: github://babeinlovexd/Insane-Sound-System/Packages/insane-frontpanel.yaml
+# ----------------------------------------------------------
+# ##############################################################################
+
+esphome:
+  name: insane-sound-system-v5
+  friendly_name: "Insane Sound System V5"
+  project:
+    name: "babeinlovexd.insane_sound_system"
+    version: "5.2"
+  on_boot:
+    priority: 800 
+    then:
+      - light.turn_on:
+          id: status_led
+          effect: "None"
+          red: 50%
+          green: 0%
+          blue: 100% 
+          brightness: 50%
+      - text_sensor.template.publish:
+          id: bl_version
+          state: "0.0"
+      - delay: 5s 
+      - script.execute: update_status_led
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: esp32s3
+  framework:
+    type: arduino 
+  flash_size: 16MB
+
+external_components:
+  - source: github://oxan/esphome-stream-server
+  - source:
+      type: git
+      url: https://github.com/babeinlovexd/esph-ws2805
+      ref: main
+    components: [ ws2805 ]
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+logger:
+  level: DEBUG
+
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  power_save_mode: none
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: true
+  on_connect:
+    - script.execute: update_status_led
+  on_disconnect:
+    - script.execute: update_status_led
+  ap:
+    ssid: "Insane-Sound Fallback"
+    password: !secret ap_password
+
+stream_server:
+  - uart_id: uart_bl
+    port: 8888
+
+web_server:
+  port: 80
+  version: 1
+  css_url: ""
+  css_include: "insane-style.css"
+  
+captive_portal:
+
+# ##############################################################################
+# BUS-SYSTEME (I2C, I2S & UART)
+# ##############################################################################
+
+i2c:
+  sda: GPIO8  # S3 Pin 12 (Label: GPIO8)
+  scl: GPIO9  # S3 Pin 15 (Label: GPIO9)
+  scan: true
+  frequency: 100kHz
+
+i2s_audio:
+  - id: i2s_bus
+    i2s_bclk_pin: GPIO15  # S3 Pin 8 (Label: GPIO15 / MTDO)
+    i2s_lrclk_pin: GPIO16 # S3 Pin 9 (Label: GPIO16 / MTDI)
+
+uart:
+  id: uart_bl
+  tx_pin: GPIO1  # S3 Pin 41 (Label: GPIO1) -> Geht an ESP BL RX
+  rx_pin: GPIO2  # S3 Pin 40 (Label: GPIO2) -> Geht an ESP BL TX
+  baud_rate: 115200
+
+# ##############################################################################
+# AUDIO & MEDIA PLAYER (WLAN / Home Assistant)
+# ##############################################################################
+
+media_player:
+  - platform: i2s_audio
+    name: "Insane Sound System"
+    id: decken_audio
+    dac_type: external
+    i2s_audio_id: i2s_bus
+    i2s_dout_pin: GPIO17  # S3 Pin 10 (Label: GPIO17 / MTCK)
+    mode: stereo
+    on_play:
+      - switch.turn_on: amp_power
+      - script.execute: update_status_led
+    on_pause:
+      - switch.turn_off: amp_power
+      - script.execute: update_status_led
+    on_idle:
+      - switch.turn_off: amp_power
+      - script.execute: update_status_led
+# ##############################################################################
+# BELEUCHTUNG 
+# ##############################################################################
+
+# ##############################################################################
+# HARDWARE STEUERUNG (Switches, Buttons & Lüfter)
+# ##############################################################################
+
+switch:
+  - platform: gpio
+    pin: GPIO10  # S3  (Label: GPIO10)
+    name: "Verstärker Power"
+    entity_category: "config"
+    id: amp_power
+    restore_mode: ALWAYS_OFF 
+
+  - platform: gpio
+    pin: GPIO11  # S3 Pin 18 (Label: GPIO12)
+    name: "Insane Turbo Mode"
+    id: insane_mode
+    restore_mode: ALWAYS_OFF
+    inverted: true
+
+  - platform: gpio
+    pin: GPIO18  # S3 Pin 11 (Label: GPIO18)
+    id: mux_select
+    name: "Audio Quelle (Intern)"
+    entity_category: "config"
+    restore_mode: ALWAYS_ON # ON (HIGH) = B2 Eingang = S3/WLAN aktiv
+    
+  - platform: gpio
+    pin: GPIO07
+    id: bl_en_pin
+    name: "WROOM EN (Reset)"
+    internal: true
+    entity_category: "config"
+    restore_mode: ALWAYS_ON # Muss HIGH sein, damit der WROOM normal läuft
+
+  - platform: gpio
+    pin: GPIO39
+    id: bl_io0_pin
+    name: "WROOM IO0 (Boot)"
+    internal: true
+    entity_category: "config"
+    restore_mode: ALWAYS_ON # Muss HIGH sein, außer beim Flashen
+
+button:
+  - platform: restart
+    name: "ESP32 Neustart"
+    id: system_neustart
+
+  - platform: template
+    name: "BL Play-Pause"
+    icon: "mdi:play-pause"
+    on_press:
+      - lambda: |-
+          if (id(media_status).state == "Wiedergabe") id(uart_bl).write_str("PAUSE\n");
+          else id(uart_bl).write_str("PLAY\n");
+
+  - platform: template
+    name: "BL Nächster Titel"
+    icon: "mdi:skip-next"
+    on_press:
+      - uart.write: "NEXT\n"
+
+  - platform: template
+    name: "BL Vorheriger Titel"
+    icon: "mdi:skip-previous"
+    on_press:
+      - uart.write: "PREV\n"
+      
+  - platform: template
+    name: "WROOM in Flash-Modus setzen"
+    id: flash_wroom_btn
+    entity_category: "config"
+    icon: "mdi:bluetooth-transfer"
+    on_press:
+      - logger.log: "Bringe WROOM in den Bootloader-Modus..."
+      # Hardware-Reset Sequenz für den WROOM 
+      - switch.turn_off: bl_io0_pin     # IO0 auf LOW (Download Mode)
+      - delay: 100ms
+      - switch.turn_off: bl_en_pin      # Reset auslösen (LOW)
+      - delay: 100ms
+      - switch.turn_on: bl_en_pin       # Reset loslassen (WROOM startet im Bootloader)
+      - delay: 500ms
+      - switch.turn_on: bl_io0_pin      # IO0 wieder freigeben (Modus bleibt aktiv)
+      - logger.log: "WROOM bereit! Starte jetzt das .bat-Tool auf deinem PC."
+
+  - platform: template
+    name: "WROOM Normal starten"
+    entity_category: "config"
+    id: bl_normal_start
+    icon: "mdi:play"
+    on_press:
+      - logger.log: "Starte WROOM normal neu..."
+      - switch.turn_on: bl_io0_pin      
+      - switch.turn_off: bl_en_pin      
+      - delay: 100ms
+      - switch.turn_on: bl_en_pin       
+
+number:
+  - platform: template
+    name: "Bluetooth Lautstärke"
+    id: bl_volume_slider
+    icon: "mdi:volume-high"
+    min_value: 0
+    max_value: 127
+    step: 5
+    initial_value: 100
+    optimistic: true
+    set_action:
+      then:
+        - lambda: |-
+            char buf[20];
+            sprintf(buf, "SET_VOL:%.0f\n", x);
+            id(uart_bl).write_str(buf);
+
+output:
+  - platform: ledc
+    pin: GPIO42  # S3 Pin 39 (Label: MTMS / GPIO42)
+    id: fan_pwm
+    frequency: 25000 Hz 
+
+fan:
+  - platform: speed
+    output: fan_pwm
+    entity_category: "config"
+    name: "Gehäuse Lüfter"
+    id: the_fan
+
+# ##############################################################################
+# SENSOREN & BLUETOOTH-LOGIK
+# ##############################################################################
+
+binary_sensor:
+  - platform: gpio
+    pin: 
+      number: GPIO12  # S3 (Label: GPIO12)
+      mode: INPUT_PULLUP 
+    name: "Verstärker Störung"
+    id: amp_fault
+    entity_category: "diagnostic"
+    device_class: problem
+    filters:
+      - invert: {}      
+      - delayed_on: 50ms 
+    on_press:
+      then:
+        - switch.turn_off: amp_power
+        - logger.log: "ALARM: TPA3110 meldet Fehler (Hitze/Kurzschluss)! Notabschaltung."
+        - script.execute: update_status_led
+    on_release:
+      then:
+        - script.execute: update_status_led
+
+  # ---Hardware-Umschaltung des I2S-Buses ---
+  - platform: gpio
+    pin: 
+      number: GPIO3  # S3 Pin 13 (Label: GPIO3) -> Signal vom ESP BL
+      mode: INPUT_PULLDOWN
+    name: "Bluetooth Stream Aktiv"
+    id: music_active_bl
+    on_press:
+      - logger.log: "Bluetooth aktiv! Schalte Hardware-Multiplexer auf Bluetooth (B1)."
+      - media_player.stop: decken_audio
+      - delay: 100ms
+      - switch.turn_off: mux_select # LOW = Mux schaltet auf B1 (Bluetooth)
+      - switch.turn_on: amp_power
+      - script.execute: update_status_led
+      - text_sensor.template.publish:
+          id: media_status
+          state: "Bluetooth aktiv"
+    on_release:
+      - logger.log: "Bluetooth beendet. Schalte Hardware-Multiplexer auf WLAN (B2)."
+      - switch.turn_on: mux_select # HIGH = Mux schaltet auf B2 (S3/HA)
+      - switch.turn_off: amp_power
+      - script.execute: update_status_led
+      - text_sensor.template.publish:
+          id: media_title
+          state: !lambda 'return id(ha_title_bridge).state.length() > 0 ? id(ha_title_bridge).state : "Bereit";'
+      - text_sensor.template.publish:
+          id: media_artist
+          state: !lambda 'return id(ha_artist_bridge).state.length() > 0 ? id(ha_artist_bridge).state : "-";'
+      - text_sensor.template.publish:
+          id: media_album
+          state: !lambda 'return id(ha_album_bridge).state.length() > 0 ? id(ha_album_bridge).state : "-";'
+      - text_sensor.template.publish:
+          id: media_status
+          state: "WLAN aktiv"
+
+sensor:
+  - platform: wifi_signal
+    name: "WLAN Signal"
+    update_interval: 60s
+  
+  - platform: internal_temperature
+    name: "ESP32 Intern Temp"
+  
+  - platform: uptime
+    name: "System Laufzeit"
+
+  - platform: tmp102
+    address: 0x48
+    name: "Temp Verstärker"
+    id: temp_tpa
+    update_interval: 10s
+    filters:
+      - sliding_window_moving_average: 
+          window_size: 5
+          send_every: 1
+
+  - platform: tmp102
+    address: 0x49
+    name: "Temp Spannungsregler"
+    id: temp_mp
+    update_interval: 10s
+    filters:
+      - sliding_window_moving_average:
+          window_size: 5
+          send_every: 1
+
+  - platform: tmp102
+    address: 0x4A
+    name: "Temp ESP32 Umgebung"
+    id: temp_esp
+    update_interval: 10s
+    filters:
+      - sliding_window_moving_average:
+          window_size: 5
+          send_every: 1
+
+# Metadaten (Universell für WLAN & Bluetooth)
+text_sensor:
+  # --- 1. Die universellen, sichtbaren Sensoren ---
+  - platform: template
+    name: "Aktueller Titel"
+    id: media_title
+    icon: "mdi:music"
+
+  - platform: template
+    name: "Aktueller Interpret"
+    id: media_artist
+    icon: "mdi:account-music"
+
+  - platform: template
+    name: "Aktuelles Album"
+    id: media_album
+    icon: "mdi:album"
+
+  - platform: template
+    name: "Wiedergabe Status"
+    id: media_status
+    icon: "mdi:play-network"
+  
+  - platform: template
+    name: "BL Firmware Version"
+    id: bl_version
+    icon: "mdi:chip"
+
+  # --- 2. Die unsichtbaren Brücken zu Home Assistant ---
+  - platform: homeassistant
+    id: ha_title_bridge
+    entity_id: ${ha_player_id}
+    attribute: media_title
+    internal: true
+    on_value:
+      - if:
+          condition:
+            switch.is_on: mux_select
+          then:
+            - text_sensor.template.publish:
+                id: media_title
+                state: !lambda 'return x.length() > 0 ? x : "WLAN Stream";'
+
+  - platform: homeassistant
+    id: ha_artist_bridge
+    entity_id: ${ha_player_id}
+    attribute: media_artist
+    internal: true
+    on_value:
+      - if:
+          condition:
+            switch.is_on: mux_select
+          then:
+            - text_sensor.template.publish:
+                id: media_artist
+                state: !lambda 'return x.length() > 0 ? x : "-";'
+
+  - platform: homeassistant
+    id: ha_album_bridge
+    entity_id: ${ha_player_id}
+    attribute: media_album
+    internal: true
+    on_value:
+      - if:
+          condition:
+            switch.is_on: mux_select
+          then:
+            - text_sensor.template.publish:
+                id: media_album
+                state: !lambda 'return x.length() > 0 ? x : "-";'
+
+# ##############################################################################
+# AUTOMATISIERUNG & INTERVALLE
+# ##############################################################################
+script:
+  - id: update_status_led
+    mode: restart 
+    then:
+      # Prio 1: Hardware-Fehler am Verstärker 
+      - if:
+          condition:
+            binary_sensor.is_on: amp_fault
+          then:
+            - light.turn_on: { id: status_led, effect: "Amp_Fault", brightness: 70% }
+          
+          # Prio 2: WLAN Verbindung verloren
+          else:
+            - if:
+                condition:
+                  not:
+                    wifi.connected:
+                then:
+                  - light.turn_on: { id: status_led, effect: "Error_Blink", brightness: 70% }
+                
+                # Prio 3: Bluetooth Stream läuft
+                else:
+                  - if:
+                      condition:
+                        binary_sensor.is_on: music_active_bl
+                      then:
+                        - light.turn_on: { id: status_led, effect: "None", red: 0%, green: 0%, blue: 100%, brightness: 70% }
+                      
+                      # Prio 4: Alles Prima (Idle)
+                      else:
+                        - light.turn_on: { id: status_led, effect: "None", red: 0%, green: 100%, blue: 0%, brightness: 30% }
+
+interval:
+  # 1.Lüfter-Logik (Temperatur-basiert)
+  - interval: 10s
+    then:
+      - lambda: |-
+          float t1 = id(temp_tpa).state;
+          float t2 = id(temp_mp).state;
+          float t3 = id(temp_esp).state;
+          
+          if (isnan(t1)) t1 = 0;
+          if (isnan(t2)) t2 = 0;
+          if (isnan(t3)) t3 = 0;
+
+          float max_temp = max(t1, max(t2, t3));
+          static bool fan_active = false; 
+
+          if (max_temp > 50.0) {
+            fan_active = true;
+          } 
+          else if (max_temp < 48.0) {
+            fan_active = false;
+          }
+
+          if (fan_active) {
+            float speed_pct = (max_temp - 50.0) / 25.0; 
+            if (speed_pct > 1.0) speed_pct = 1.0;
+            if (speed_pct < 0.3) speed_pct = 0.3; 
+
+            auto call = id(the_fan).make_call();
+            call.set_state(true);
+            int steps = id(the_fan).get_traits().supported_speed_count();
+            call.set_speed((int)(speed_pct * steps));
+            call.perform();
+            ESP_LOGD("custom_fan", "Max Temp: %.1f°C -> Lüfter: %.0f%%", max_temp, speed_pct * 100);
+          } else {
+            if (id(the_fan).state) {
+              id(the_fan).turn_off();
+              ESP_LOGD("custom_fan", "Max Temp: %.1f°C -> Lüfter AUS (Cool-Down)", max_temp);
+            }
+          }
+
+  # 2. UART Daten lesen und zuordnen 
+  - interval: 100ms
+    id: uart_reader
+    then:
+      - lambda: |-
+          static std::string buffer = "";
+          while (id(uart_bl).available()) {
+            uint8_t byte;
+            id(uart_bl).read_byte(&byte);
+            char c = (char)byte;
+            
+            if (c == '\n') {
+              std::string line = buffer;
+              buffer = "";
+              
+              // Metadaten Parser
+              if (line.rfind("TITLE:", 0) == 0) {
+                id(media_title).publish_state(line.substr(6));
+              } else if (line.rfind("ARTIST:", 0) == 0) {
+                id(media_artist).publish_state(line.substr(7));
+              } else if (line.rfind("ALBUM:", 0) == 0) {
+                id(media_album).publish_state(line.substr(6));
+              } else if (line.find("STATUS:PLAY") == 0) {
+                id(media_status).publish_state("Wiedergabe");
+              } else if (line.find("STATUS:PAUSE") == 0) {
+                id(media_status).publish_state("Pause");
+              } else if (line.find("STATUS:OFFLINE") == 0) {
+                id(media_status).publish_state("Getrennt");
+                id(media_title).publish_state("Bereit");
+                id(media_artist).publish_state("-");
+                id(bl_version).publish_state("0.0");
+              } 
+              else if (line.rfind("VERSION:", 0) == 0) {
+                id(bl_version).publish_state(line.substr(8));
+              }
+              
+              // Lautstärke-Rückmeldung vom ESP BL synchronisieren
+              else if (line.rfind("VOL:", 0) == 0) {
+                float vol = atof(line.substr(4).c_str());
+                auto call = id(bl_volume_slider).make_call();
+                call.set_value(vol);
+                call.perform();
+              }
+            } else if (c != '\r') {
+              buffer += c;
+            }
+          }
+
+  
