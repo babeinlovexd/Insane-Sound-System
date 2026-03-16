@@ -41,7 +41,9 @@ light:
     num_leds: 1
     variant: WS2812     
     type: GRB    
-    method: ESP32_I2S_1
+    method:
+      type: esp32_rmt
+      channel: 3
     effects: 
       - strobe:
           name: "Error_Blink" 
