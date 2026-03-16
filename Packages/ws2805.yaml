@@ -33,15 +33,15 @@ light:
     gamma_correct: 2.2      
     effects: *effekte
 
-  - platform: neopixelbus
+  - platform: esp32_rmt_led_strip
     name: "Mainboard Status LED"
     id: status_led
     pin: GPIO48
     internal: true
     num_leds: 1
-    variant: WS2812     
-    type: GRB 
-    method: ESP32_RMT_3       
+    chipset: WS2812     
+    is_rgbw: false
+    rmt_channel: 3      
     effects: 
       - strobe:
           name: "Error_Blink" 

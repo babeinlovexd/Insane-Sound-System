@@ -1,13 +1,12 @@
 light:
-
-  - platform: neopixelbus
+  - platform: esp32_rmt_led_strip
     name: "Licht Zone 1"
-    id: light_1        
+    id: light_1
     pin: GPIO4
     num_leds: 30
-    variant: SK6812
-    type: RGBW   
-    method: ESP32_RMT_0
+    chipset: SK6812
+    is_rgbw: true
+    rmt_channel: 0
     effects: &effekte 
       - addressable_rainbow:
           name: "Regenbogen"
@@ -20,35 +19,35 @@ light:
       - addressable_fireworks:
           name: "Feuerwerk"
 
-  - platform: neopixelbus
+  - platform: esp32_rmt_led_strip
     name: "Licht Zone 2"
     id: light_2        
     pin: GPIO5
     num_leds: 30
-    variant: SK6812
-    type: RGBW   
-    method: ESP32_RMT_1
+    chipset: SK6812
+    is_rgbw: true
+    rmt_channel: 1
     effects: *effekte
 
-  - platform: neopixelbus
+  - platform: esp32_rmt_led_strip
     name: "Licht Zone 3"
     id: light_3        
     pin: GPIO6
     num_leds: 30
-    variant: SK6812
-    type: RGBW    
-    method: ESP32_RMT_2
+    chipset: SK6812
+    is_rgbw: true
+    rmt_channel: 2
     effects: *effekte
 
-  - platform: neopixelbus
+  - platform: esp32_rmt_led_strip
     name: "Mainboard Status LED"
     id: status_led
     pin: GPIO48
     internal: true
     num_leds: 1
-    variant: WS2812     
-    type: GRB      
-    method: ESP32_RMT_3  
+    chipset: WS2812     
+    is_rgbw: false
+    rmt_channel: 3
     effects: 
       - strobe:
           name: "Error_Blink" 
