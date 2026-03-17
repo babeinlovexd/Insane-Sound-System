@@ -5,7 +5,7 @@
  * PINOUT: BCK=27, LRCK=25, DATA=26, STATUS=14, RX0=3, TX0=1
  * ======================================================================================
  */
-String firmware_version = "5.0.0";
+String firmware_version = "5.2.0";
 #include "BluetoothA2DPSink.h"
 #include "driver/i2s_std.h"
 
@@ -48,6 +48,10 @@ void avrc_metadata_callback(uint8_t id, const uint8_t *text) {
     case ESP_AVRC_MD_ATTR_ALBUM:  Serial.printf("ALBUM:%s\n", text); break;
     default: break;
   }
+}
+void volume_change_callback(int volume) {
+  // Sendet die neue Lautstärke an den ESP32-S3 (ESPHome)
+  Serial.printf("VOL:%d\n", volume);
 }
 
 // ======================================================================================
@@ -104,6 +108,7 @@ void setup() {
     a2dp_sink.set_avrc_rn_playstatus_callback(play_status_callback);
     a2dp_sink.set_on_connection_state_changed(connection_state_changed);
     a2dp_sink.set_stream_reader(audio_data_callback, false);
+    a2dp_sink.set_on_volumechange(volume_change_callback);
 
     // Startet sofort ohne WLAN-Wartezeit!
     a2dp_sink.start("INSANE-BL V5");
