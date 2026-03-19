@@ -204,14 +204,24 @@ uart:
 # AUDIO & MEDIA PLAYER (WLAN / Home Assistant)
 # ##############################################################################
 
-media_player:
+speaker:
   - platform: i2s_audio
-    name: "Insane Sound System"
-    id: decken_audio
+    id: insane_speaker
     dac_type: external
     i2s_audio_id: i2s_bus
     i2s_dout_pin: GPIO17  # S3 Pin 10 (Label: GPIO17 / MTCK)
-    mode: stereo
+    channel: stereo
+
+media_player:
+  - platform: speaker_source
+    name: "Insane Sound System"
+    id: decken_audio
+    volume:
+      restore_state: true
+    media_pipeline:
+      speaker: insane_speaker
+    announcement_pipeline:
+      speaker: insane_speaker
     on_play:
       - switch.turn_on: amp_power
       - script.execute: update_status_led
