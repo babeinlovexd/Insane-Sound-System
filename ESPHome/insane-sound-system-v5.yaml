@@ -218,12 +218,13 @@ media_player:
   - platform: speaker_source
     name: "Insane Sound System"
     id: decken_audio
-    volume:
-      restore_state: true
+    volume_restore_state: true
     media_pipeline:
       speaker: insane_speaker
+      sources: []
     announcement_pipeline:
       speaker: insane_speaker
+      sources: []
     on_play:
       - switch.turn_on: amp_power
       - script.execute: update_status_led
