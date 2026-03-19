@@ -204,8 +204,6 @@ uart:
 # AUDIO & MEDIA PLAYER (WLAN / Home Assistant)
 # ##############################################################################
 
-media_source:
-
 speaker:
   - platform: i2s_audio
     id: insane_speaker
@@ -215,15 +213,10 @@ speaker:
     channel: stereo
 
 media_player:
-  - platform: speaker_source
+  - platform: speaker
     name: "Insane Sound System"
     id: decken_audio
-    media_pipeline:
-      speaker: insane_speaker
-      sources: []
-    announcement_pipeline:
-      speaker: insane_speaker
-      sources: []
+    speaker: insane_speaker
     on_play:
       - switch.turn_on: amp_power
       - script.execute: update_status_led
