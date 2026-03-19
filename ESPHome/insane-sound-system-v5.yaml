@@ -131,7 +131,11 @@ esp32:
   flash_size: 16MB
 
 external_components:
-  - source: github://oxan/esphome-stream-server
+  - source:
+      type: git
+      url: https://github.com/oxan/esphome-stream-server
+    components: [ stream_server ]
+    refresh: 0s
   - source:
       type: git
       url: https://github.com/babeinlovexd/esph-ws2805
