@@ -218,7 +218,6 @@ media_player:
   - platform: speaker_source
     name: "Insane Sound System"
     id: decken_audio
-    volume_restore_state: true
     media_pipeline:
       speaker: insane_speaker
       sources: []
