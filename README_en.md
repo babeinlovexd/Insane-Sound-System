@@ -67,6 +67,8 @@ Anyone can build this system. Just stubbornly follow these steps:
 Here you can find the interactive Bill of Materials (iBOM) for the Insane Sound System:
 <a href="https://htmlpreview.github.io/?https://github.com/babeinlovexd/Insane-Sound-System/blob/main/BOM/PCB_insane%20sound%20system%20v5.1_rev0.html">👉 <b>Interactive Assembly Aid</b></a>
 
+> **💡 Note on Audio Architecture:** The Insane Sound System v5.2 now uses the cutting-edge, modular `platform: speaker` audio pipeline of ESPHome (compatible with ESPHome 2026.3.0+). Your ESP32 benefits from native transcoding, meaning Home Assistant (from 2024.10+) efficiently streams the audio, taking the computational load off the microcontroller. This ensures much more stable streams, making it the perfect partner for Music Assistant!
+
 ### Step 2: Prepare ESPHome (Mainboard S3)
 For security reasons, this project uses externalized passwords.
 1. Create a new file called `secrets.yaml` in your Home Assistant / ESPHome folder.
