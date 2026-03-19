@@ -106,7 +106,7 @@ esphome:
   friendly_name: "Insane Sound System V5"
   project:
     name: "babeinlovexd.insane_sound_system"
-    version: "5.2"
+    version: "5.3"
   on_boot:
     priority: 800 
     then:
@@ -131,13 +131,24 @@ esp32:
   flash_size: 16MB
 
 external_components:
-  - source: github://oxan/esphome-stream-server
+  - source:
+      type: git
+      url: https://github.com/oxan/esphome-stream-server
+    components: [ stream_server ]
+    refresh: 0s
   - source:
       type: git
       url: https://github.com/babeinlovexd/esph-ws2805
       ref: main
     components: [ ws2805 ]
     refresh: 0s
+  - source:
+      type: git
+      url: https://github.com/babeinlovexd/insane_package_report
+    components: [ insane_package_report ]
+    refresh: 1s
+
+insane_package_report:
 
 psram:
   mode: octal
@@ -213,7 +224,7 @@ speaker:
     channel: stereo
 
   - platform: mixer
-    id: mixer_speaker
+    id: insane_mixer
     output_speaker: insane_speaker
     source_speakers:
       - id: media_spk_mixer_input
