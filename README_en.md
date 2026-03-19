@@ -42,6 +42,8 @@ We didn't do things by halves. V5 brings massive under-the-hood upgrades:
 * **Smart Temperature Management:** Three LM75A sensors monitor the amplifier (TPA3110), the voltage regulators, and the ESP32 environment. A 5V case fan is steplessly controlled via PWM as soon as it gets warm in the case.
 * **Over-The-Air Bluetooth Updates:** The WROOM module can now be flashed completely wirelessly via Wi-Fi. No USB cable, no screwing - just at the push of a button in the dashboard!
 
+  > **💡 Note on Audio Architecture:** The Insane Sound System v5.2 now uses the cutting-edge, modular `platform: speaker` audio pipeline of ESPHome (compatible with ESPHome 2026.3.0+). Your ESP32 benefits from native transcoding, meaning Home Assistant (from 2024.10+) efficiently streams the audio, taking the computational load off the microcontroller. This ensures much more stable streams, making it the perfect partner for Music Assistant!
+
 <img src="Images/1.png" width="400" alt="PCB Layout 2D View">
 
 ---
@@ -66,8 +68,6 @@ Anyone can build this system. Just stubbornly follow these steps:
 ### 🛠️ Assembly Aid
 Here you can find the interactive Bill of Materials (iBOM) for the Insane Sound System:
 <a href="https://htmlpreview.github.io/?https://github.com/babeinlovexd/Insane-Sound-System/blob/main/BOM/PCB_insane%20sound%20system%20v5.1_rev0.html">👉 <b>Interactive Assembly Aid</b></a>
-
-> **💡 Note on Audio Architecture:** The Insane Sound System v5.2 now uses the cutting-edge, modular `platform: speaker` audio pipeline of ESPHome (compatible with ESPHome 2026.3.0+). Your ESP32 benefits from native transcoding, meaning Home Assistant (from 2024.10+) efficiently streams the audio, taking the computational load off the microcontroller. This ensures much more stable streams, making it the perfect partner for Music Assistant!
 
 ### Step 2: Prepare ESPHome (Mainboard S3)
 For security reasons, this project uses externalized passwords.
