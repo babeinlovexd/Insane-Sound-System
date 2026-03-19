@@ -212,11 +212,21 @@ speaker:
     i2s_dout_pin: GPIO17  # S3 Pin 10 (Label: GPIO17 / MTCK)
     channel: stereo
 
+  - platform: mixer
+    id: mixer_speaker
+    output_speaker: insane_speaker
+    source_speakers:
+      - id: media_spk_mixer_input
+      - id: announcement_spk_mixer_input
+
 media_player:
   - platform: speaker
     name: "Insane Sound System"
     id: decken_audio
-    speaker: insane_speaker
+    media_pipeline:
+      speaker: media_spk_mixer_input
+    announcement_pipeline:
+      speaker: announcement_spk_mixer_input
     on_play:
       - switch.turn_on: amp_power
       - script.execute: update_status_led
