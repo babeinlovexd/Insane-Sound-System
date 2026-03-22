@@ -3,7 +3,7 @@
   <img src="https://img.shields.io/github/v/release/babeinlovexd/Insane-Sound-System?style=for-the-badge&color=2ecc71" alt="Latest Release">
   <img src="https://img.shields.io/badge/Status-Stable-2ecc71?style=for-the-badge" alt="Status">
   <img src="https://img.shields.io/badge/ESPHome-Ready-03A9F4?style=for-the-badge&logo=esphome" alt="ESPHome">
-  <img src="https://img.shields.io/badge/Hardware-V5.3-f39c12?style=for-the-badge&logo=pcb" alt="Hardware Version">
+  <img src="https://img.shields.io/badge/Hardware-V5.4-f39c12?style=for-the-badge&logo=pcb" alt="Hardware Version">
   <img src="https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey?style=for-the-badge&logo=creative-commons" alt="License: CC BY-NC-SA 4.0">
 </div>
 <br>
@@ -44,7 +44,7 @@ Wir haben keine halben Sachen gemacht. V5 bringt massive Upgrades unter der Haub
 
   > **💡 Hinweis zur Audio-Architektur:** Das Insane Sound System nutzt ab Version 5.2 die hochmoderne, modulare `platform: speaker` Audio-Pipeline von ESPHome (kompatibel mit ESPHome 2026.3.0+). Dein ESP32 profitiert dadurch von nativem Transcoding, wodurch Home Assistant (ab 2024.10+) die Audio-Streams rechenschonend weiterleitet. Das sorgt für stabilere Verbindungen und macht das System zum idealen Partner für Music Assistant!
 
-<img src="Images/1.png" width="400" alt="Platinen Layout 2D Ansicht">
+<img src="Images/2.svg" width="400" alt="Platinen Layout 2D Ansicht">
 
 ---
 
@@ -89,7 +89,7 @@ Aus Sicherheitsgründen nutzt dieses Projekt ausgelagerte Passwörter.
    * **Front-Panel (Optional):** Falls du die Frontpanel-Erweiterung (OLED & Tasten) nutzt, entferne auf dieselbe Weise die Rauten vor `frontpanel:`, `url:` und `file:`.
 6. Schließe den **ESP32-S3** per USB an deinen Rechner an und flashe ihn das allererste Mal ganz normal über das Kabel.
 
-<img src="Images/2.png" width="300" alt="Detailansicht 3D Komponenten">
+<img src="Images/1.svg" width="300" alt="Detailansicht Bottom">
 
 ## 🚀 Das offizielle InsaneFlasher Tool (All-in-One)
 
@@ -121,7 +121,7 @@ Wähle dein Insane Sound System im Tool aus und klicke einfach auf den großen r
 
 **Glückwunsch! Dein Insane Sound System V5 ist jetzt voll einsatzbereit!**
 
-<img src="Images/5.png" width="800" alt="Finales 3D Rendering">
+<img src="Images/4.svg" width="800" alt="Schematic">
 
 ---
 
