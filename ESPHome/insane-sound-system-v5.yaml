@@ -160,6 +160,7 @@ logger:
 api:
   encryption:
     key: !secret api_encryption_key
+  homeassistant_services: true
 
 ota:
   - platform: esphome
