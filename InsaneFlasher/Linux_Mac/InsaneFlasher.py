@@ -50,6 +50,7 @@ ctk.set_default_color_theme("blue")
 
 FIRMWARE_URL = "https://raw.githubusercontent.com/babeinlovexd/Insane-Sound-System/main/Firmware/insane_bl_v5.ino.merged.bin"
 GITHUB_URL = "https://github.com/babeinlovexd"
+UPDATE_CHECK_INTERVAL = 3600 # Sekunden
 
 class DeviceListener:
     def __init__(self, callback):
@@ -100,6 +101,9 @@ class InsaneFlasher(ctk.CTk):
         self.dropdown_mapping = {}  
         self.zeroconf = Zeroconf()
         self.is_fetching = False
+
+        self.online_version = None
+        self.last_update_check = 0
 
         # --- HEADER ---
         self.header_frame = ctk.CTkFrame(self, fg_color="transparent")
@@ -405,6 +409,18 @@ class InsaneFlasher(ctk.CTk):
         wifi = get_state("sensor", "WLAN Signal")
         bl_version = get_state("text_sensor", "BL Firmware Version") # Version holen
 
+        import time
+        current_time = time.time()
+
+        # Check GitHub version only occasionally to avoid rate limiting
+        if current_time - self.last_update_check > UPDATE_CHECK_INTERVAL:
+            self.last_update_check = current_time
+            try:
+                VERSION_URL = "https://raw.githubusercontent.com/babeinlovexd/Insane-Sound-System/main/Firmware/version.txt"
+                self.online_version = requests.get(VERSION_URL, timeout=3).text.strip()
+            except:
+                self.online_version = None
+
         # UI Update triggern (jetzt mit bl_version als Argument)
         self.after(0, self._update_dashboard_ui, src, amp, turbo, t_amp, t_esp, t_pwr, bl_stat, bl_song, bl_art, fan, wifi, bl_version)
         # Versions-Check für den Button
@@ -534,9 +550,10 @@ class InsaneFlasher(ctk.CTk):
             
     def check_for_updates(self, local_version):
         try:
-            # 1. Online Version holen (Raw URL deiner version.txt)
-            VERSION_URL = "https://raw.githubusercontent.com/babeinlovexd/Insane-Sound-System/main/Firmware/version.txt"
-            online_version = requests.get(VERSION_URL, timeout=3).text.strip()
+            # 1. Online Version holen (wird jetzt im Hintergrund gecached)
+            online_version = self.online_version
+            if not online_version:
+                raise Exception("Keine Online-Version verfügbar")
             
             # 2. Logik & UI Update
             if local_version == "N/A" or local_version == "Offline":
