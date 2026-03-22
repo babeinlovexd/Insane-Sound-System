@@ -128,9 +128,6 @@ esp32:
   variant: esp32s3
   framework:
     type: arduino
-    platformio_options:
-      board_build.flash_mode: qio
-      board_build.arduino.memory_type: qio_opi
   flash_size: 16MB
 
 external_components:
