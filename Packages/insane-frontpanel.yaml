@@ -82,23 +82,27 @@ sensor:
     on_clockwise:
       - script.execute: trigger_vol_osd
       - if:
-          condition: { binary_sensor.is_on: music_active_bl }
+          condition: 
+            binary_sensor.is_on: music_active_bl
           then:
             - number.increment: bl_volume_slider
           else:
             - homeassistant.service:
                 service: media_player.volume_up
-                data: { entity_id: ${ha_player_id} }
+                data: 
+                  entity_id: ${ha_player_id}
     on_anticlockwise:
       - script.execute: trigger_vol_osd
       - if:
-          condition: { binary_sensor.is_on: music_active_bl }
+          condition: 
+            binary_sensor.is_on: music_active_bl
           then:
             - number.decrement: bl_volume_slider
           else:
             - homeassistant.service:
                 service: media_player.volume_down
-                data: { entity_id: ${ha_player_id} }
+                data: 
+                  entity_id: ${ha_player_id}
 
   - platform: homeassistant
     id: ha_volume
@@ -205,8 +209,10 @@ interval:
       - if:
           condition:
             or:
-              - not: { wifi.connected: }
-              - not: { api.connected: }
+              - not: 
+                  wifi.connected:
+              - not: 
+                  api.connected:
           then:
             - output.turn_on: led_red
           else:
