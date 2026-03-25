@@ -16,7 +16,7 @@ binary_sensor:
     pin:
       pcf8574: front_hub
       number: 0
-      mode: INPUT_PULLUP
+      mode: INPUT
       inverted: true
     on_press:
       - uart.write: "PREV\n"
@@ -26,7 +26,7 @@ binary_sensor:
     pin:
       pcf8574: front_hub
       number: 1
-      mode: INPUT_PULLUP
+      mode: INPUT
       inverted: true
     on_press:
       - lambda: |-
@@ -38,7 +38,7 @@ binary_sensor:
     pin:
       pcf8574: front_hub
       number: 2
-      mode: INPUT_PULLUP
+      mode: INPUT
       inverted: true
     on_press:
       - uart.write: "NEXT\n"
@@ -48,7 +48,7 @@ binary_sensor:
     pin:
       pcf8574: front_hub
       number: 3  
-      mode: INPUT_PULLUP
+      mode: INPUT
       inverted: true
     on_press:
       - if:
