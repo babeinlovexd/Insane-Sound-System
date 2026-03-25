@@ -2,13 +2,14 @@
 # INSANE SOUND SYSTEM - FRONT PANEL ERWEITERUNG
 # =======================================================
 
-# 1. I2C Expander für die Tasten aktivieren (PCF8574)
+logger:
+  hardware_uart: USB_CDC
+
 pcf8574:
   - id: 'front_hub'
     address: 0x20
     pcf8575: false
 
-# 2. Die drei Hardware-Tasten (via I2C)
 binary_sensor:
   - platform: gpio
     name: "Front Taste 1 (Zurück)"
@@ -42,18 +43,85 @@ binary_sensor:
     on_press:
       - uart.write: "NEXT\n"
 
-# 3. Der Dreh-Encoder (an Expansion Header GPIO 43 & 44)
+  - platform: gpio
+    name: "Front Taste 4 (Encoder Klick)"
+    pin:
+      pcf8574: front_hub
+      number: 3  
+      mode: INPUT_PULLUP
+      inverted: true
+    on_press:
+      - if:
+          condition:
+            binary_sensor.is_on: music_active_bl
+          then:
+            - lambda: |-
+                id(uart_bl).write_str("SET_VOL:0\n");
+                auto call = id(bl_volume_slider).make_call();
+                call.set_value(0);
+                call.perform();
+          else:
+            - homeassistant.service:
+                service: media_player.volume_mute
+                data:
+                  entity_id: ${ha_player_id}
+                  is_volume_muted: !lambda 'return !id(ha_is_muted).state;'
+
+  - platform: homeassistant
+    id: ha_is_muted
+    entity_id: ${ha_player_id}
+    attribute: is_volume_muted
+    internal: true
+
+
 sensor:
   - platform: rotary_encoder
     name: "Front Lautstärke"
     pin_a: GPIO43
     pin_b: GPIO44
     on_clockwise:
-      - number.increment: bl_volume_slider
+      - script.execute: trigger_vol_osd
+      - if:
+          condition: { binary_sensor.is_on: music_active_bl }
+          then:
+            - number.increment: bl_volume_slider
+          else:
+            - homeassistant.service:
+                service: media_player.volume_up
+                data: { entity_id: ${ha_player_id} }
     on_anticlockwise:
-      - number.decrement: bl_volume_slider
+      - script.execute: trigger_vol_osd
+      - if:
+          condition: { binary_sensor.is_on: music_active_bl }
+          then:
+            - number.decrement: bl_volume_slider
+          else:
+            - homeassistant.service:
+                service: media_player.volume_down
+                data: { entity_id: ${ha_player_id} }
 
-# 4. Das OLED Display & Schriften (I2C)
+  - platform: homeassistant
+    id: ha_volume
+    entity_id: ${ha_player_id}
+    attribute: volume_level
+    internal: true
+
+
+output:
+  - platform: gpio
+    pin: { pcf8574: front_hub, number: 4, mode: OUTPUT, inverted: true }
+    id: led_yellow
+  - platform: gpio
+    pin: { pcf8574: front_hub, number: 5, mode: OUTPUT, inverted: true }
+    id: led_red
+  - platform: gpio
+    pin: { pcf8574: front_hub, number: 6, mode: OUTPUT, inverted: true }
+    id: led_green
+  - platform: gpio
+    pin: { pcf8574: front_hub, number: 7, mode: OUTPUT, inverted: true }
+    id: led_blue
+
+
 font:
   - file: "gfonts://Roboto"
     id: font_title
@@ -66,11 +134,124 @@ display:
   - platform: ssd1306_i2c
     model: "SSD1306 128x64"
     address: 0x3C
+    update_interval: 50ms 
     lambda: |-
-      // Oben: Status (Links) & Lautstärke (Rechts)
-      it.printf(0, 0, id(font_small), "%s", id(media_status).state.c_str());
-      it.printf(128, 0, id(font_small), TextAlign::TOP_RIGHT, "Vol: %.0f", id(bl_volume_slider).state);
+      // 1. STANDBY: Wenn der Verstärker aus ist, bleibt das Display schwarz (Burn-In Schutz)
+      if (!id(amp_power).state) {
+        return; 
+      }
+
+      // 2. OBERES VIERTEL (Statuszeile)
+      auto time = id(ha_time).now();
+      if (time.is_valid()) {
+        it.strftime(0, 0, id(font_small), TextAlign::TOP_LEFT, "%d.%m.", time);
+        it.strftime(64, 0, id(font_small), TextAlign::TOP_CENTER, "%H:%M", time);
+      }
       
-      // Mitte: Titel und Interpret (Universell für WLAN & Bluetooth!)
-      it.printf(64, 25, id(font_title), TextAlign::CENTER, "%s", id(media_title).state.c_str());
-      it.printf(64, 45, id(font_small), TextAlign::CENTER, "%s", id(media_artist).state.c_str());
+      if (id(music_active_bl).state) {
+        it.print(128, 0, id(font_small), TextAlign::TOP_RIGHT, "BL");
+      } else {
+        it.print(128, 0, id(font_small), TextAlign::TOP_RIGHT, "HA");
+      }
+
+      // 3. UNTERE 3/4 (Inhalt)
+      if (id(show_vol_osd)) {
+        // --- MODUS: VOLUME BALKEN ---
+        float vol_pct = 0.0;
+        if (id(music_active_bl).state) {
+          vol_pct = id(bl_volume_slider).state / 127.0; // BL Range ist 0-127
+        } else {
+          vol_pct = id(ha_volume).state; // HA Range ist 0.0-1.0
+          if (isnan(vol_pct)) vol_pct = 0.0;
+        }
+        
+        it.printf(64, 25, id(font_title), TextAlign::TOP_CENTER, "Volume: %.0f%%", vol_pct * 100);
+        
+        // Zeichne den leeren Rahmen (100px breit) und fülle ihn entsprechend
+        it.rectangle(14, 45, 100, 10);
+        it.filled_rectangle(16, 47, (int)(vol_pct * 96), 6);
+
+      } else {
+        // --- MODUS: TITEL & INTERPRET (inkl. Scrolling) ---
+        std::string title = id(media_title).state;
+        std::string artist = id(media_artist).state;
+        
+        static int x_offset = 64; 
+        int x1, y1, width, height;
+        
+        // Berechne die exakte Breite des Titels in Pixeln
+        it.get_text_bounds(0, 0, title.c_str(), id(font_title), TextAlign::TOP_LEFT, &x1, &y1, &width, &height);
+        
+        if (width > 128) {
+          // Titel ist zu lang -> Scrolle um 2 Pixel pro Frame nach links
+          x_offset -= 2; 
+          if (x_offset < -width) {
+            x_offset = 128; // Wenn komplett durchgelaufen, starte wieder von ganz rechts
+          }
+          it.print(x_offset, 25, id(font_title), TextAlign::TOP_LEFT, title.c_str());
+        } else {
+          // Titel passt aufs Display -> Zentriert anzeigen
+          x_offset = 64; 
+          it.print(64, 25, id(font_title), TextAlign::TOP_CENTER, title.c_str());
+        }
+        
+        // Interpret bleibt starr darunter (wird abgeschnitten, falls extrem lang)
+        it.print(64, 45, id(font_small), TextAlign::TOP_CENTER, artist.c_str());
+      }
+
+interval:
+  - interval: 1s
+    then:
+      - if:
+          condition:
+            or:
+              - not: { wifi.connected: }
+              - not: { api.connected: }
+          then:
+            - output.turn_on: led_red
+          else:
+            - output.turn_off: led_red
+      - if:
+          condition:
+            binary_sensor.is_on: music_active_bl
+          then:
+            - output.turn_on: led_blue
+          else:
+            - output.turn_off: led_blue
+
+      - if:
+          condition:
+            switch.is_on: amp_power
+          then:
+            - output.turn_on: led_green
+          else:
+            - output.turn_off: led_green
+
+      - if:
+          condition:
+            binary_sensor.is_on: ha_is_muted
+          then:
+            - output.turn_on: led_yellow
+          else:
+            - output.turn_off: led_yellow
+
+time:
+  - platform: homeassistant
+    id: ha_time
+
+globals:
+  - id: show_vol_osd
+    type: bool
+    initial_value: 'false'
+
+script:
+  - id: trigger_vol_osd
+    mode: restart
+    then:
+      - globals.set:
+          id: show_vol_osd
+          value: 'true'
+      - delay: 3s
+      - globals.set:
+          id: show_vol_osd
+          value: 'false'
