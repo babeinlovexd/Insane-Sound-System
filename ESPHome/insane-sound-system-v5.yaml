@@ -371,7 +371,9 @@ output:
   - platform: ledc
     pin: GPIO42  # S3 Pin 39 (Label: MTMS / GPIO42)
     id: fan_pwm
-    frequency: 25000 Hz 
+    frequency: 50 Hz 
+    min_power: 0.30
+    zero_means_zero: true 
 
 fan:
   - platform: speed
