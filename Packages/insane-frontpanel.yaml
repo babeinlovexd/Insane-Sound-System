@@ -22,7 +22,7 @@ binary_sensor:
       - uart.write: "PREV\n"
 
   - platform: gpio
-    name: "Front Taste 2 (Play/Pause)"
+    name: "Front Taste 2 (Play-Pause)"
     pin:
       pcf8574: front_hub
       number: 1

@@ -43,6 +43,7 @@ def build_insane_flasher():
         f"--icon={icon_file}",
         f"--add-data={png_file}{os.pathsep}.",
         f"--add-data={icon_file}{os.pathsep}.",
+        "--hidden-import=serial.urlhandler.protocol_socket",
         script_name
     ]
 

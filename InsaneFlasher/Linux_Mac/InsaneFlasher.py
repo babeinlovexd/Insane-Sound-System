@@ -9,6 +9,7 @@ import sys
 import urllib.parse
 import subprocess
 import esptool
+import serial.urlhandler.protocol_socket
 import io
 import contextlib
 import json
