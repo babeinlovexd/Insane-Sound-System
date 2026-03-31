@@ -44,6 +44,7 @@ def build_insane_flasher():
         f"--add-data={png_file}{os.pathsep}.",
         f"--add-data={icon_file}{os.pathsep}.",
         "--hidden-import=serial.urlhandler.protocol_socket",
+        "--collect-data=esptool",
         script_name
     ]
 
