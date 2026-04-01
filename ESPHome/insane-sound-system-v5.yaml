@@ -667,7 +667,9 @@ interval:
             }
           } else {
             if (id(the_fan).state) {
-              id(the_fan).turn_off();
+              auto call = id(the_fan).make_call();
+              call.set_state(false);
+              call.perform();          
               ESP_LOGD("custom_fan", "Max Temp: %.1f°C -> Lüfter AUS (Cool-Down)", max_temp);
             }
           }
