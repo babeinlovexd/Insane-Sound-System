@@ -3,7 +3,7 @@
   <img src="https://img.shields.io/github/v/release/babeinlovexd/Insane-Sound-System?style=for-the-badge&color=2ecc71" alt="Latest Release">
   <img src="https://img.shields.io/badge/Status-Stable-2ecc71?style=for-the-badge" alt="Status">
   <img src="https://img.shields.io/badge/ESPHome-Ready-03A9F4?style=for-the-badge&logo=esphome" alt="ESPHome">
-  <img src="https://img.shields.io/badge/Hardware-V5.4-f39c12?style=for-the-badge&logo=pcb" alt="Hardware Version">
+  <img src="https://img.shields.io/badge/Hardware-V5.5-f39c12?style=for-the-badge&logo=pcb" alt="Hardware Version">
   <img src="https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey?style=for-the-badge&logo=creative-commons" alt="License: CC BY-NC-SA 4.0">
 </div>
 <br>
@@ -83,13 +83,10 @@ Aus Sicherheitsgründen nutzt dieses Projekt ausgelagerte Passwörter.
    web_server_password: "DEIN_WEB_SERVER_PASSWORT"
    ```
 3. Lade die Datei `insane-sound-system-v5.yaml` aus dem Ordner `ESPHome/` in dein ESPHome-Dashboard hoch.
-4. Das Web-Interface Design (`insane-style.css`): Das Projekt bringt ein maßgeschneidertes Design für das lokale Web-Interface mit. Die benötigte Datei findest du in den heruntergeladenen Projektdateien im Ordner `webserver/`.
-   * **Wichtig:** Diese CSS-Datei muss zwingend in exakt denselben Ordner auf deinem Server kopiert werden, in dem auch deine `.yaml`-Datei liegt (meistens `/config/esphome/` oder `/homeassistant/esphome/`).
-   * **Wie mache ich das?** Da das Standard-ESPHome-Dashboard keinen direkten Dateiupload für CSS-Dateien anbietet, nutzt du in Home Assistant am besten ein Add-on wie den **"File editor"**, **"Studio Code Server"** oder einen **"Filebrowser"**. Navigiere dort einfach in deinen ESPHome-Ordner und lade die `insane-style.css` direkt neben die `insane-sound-system-v5.yaml` hoch. Nur so bindet der Compiler das Design beim Flashen korrekt ein!
-5. **LEDs und Front-Panel aktivieren (Packages):** In der `insane-sound-system-v5.yaml` findest du ganz oben unter `packages:` Konfigurationsblöcke für verschiedene LED-Streifen (WS2811, WS2814, WS2805) sowie das optionale Front-Panel.
+4. **LEDs und Front-Panel aktivieren (Packages):** In der `insane-sound-system-v5.yaml` findest du ganz oben unter `packages:` Konfigurationsblöcke für verschiedene LED-Streifen (WS2811, WS2814, WS2805) sowie das optionale Front-Panel.
    * **LEDs:** Markiere den Block des LED-Typs, den du nutzt, und entferne die Rauten (`#`) am Anfang der Zeilen (Tipp: Block markieren und `Strg` + `#` drücken). Es darf **nur ein** LED-Block gleichzeitig aktiv sein!
    * **Front-Panel (Optional):** Falls du die Frontpanel-Erweiterung (OLED & Tasten) nutzt, entferne auf dieselbe Weise die Rauten vor `frontpanel:`, `url:` und `file:`.
-6. Schließe den **ESP32-S3** per USB an deinen Rechner an und flashe ihn das allererste Mal ganz normal über das Kabel.
+5. Schließe den **ESP32-S3** per USB an deinen Rechner an und flashe ihn das allererste Mal ganz normal über das Kabel.
 
 <img src="Images/1.svg" width="300" alt="Detailansicht Bottom">
 

@@ -5,7 +5,7 @@
  * PINOUT: BCK=27, LRCK=25, DATA=26, STATUS=14, RX0=3, TX0=1
  * ======================================================================================
  */
-String firmware_version = "5.4.0"; 
+String firmware_version = "5.5.0";
 #include "BluetoothA2DPSink.h"
 #include "ESP_I2S.h"
 
