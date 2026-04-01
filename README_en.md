@@ -83,9 +83,9 @@ For security reasons, this project uses externalized passwords.
    web_server_password: "YOUR_WEB_SERVER_PASSWORD"
    ```
 3. Upload the file `insane-sound-system-v5.yaml` from the `ESPHome/` folder to your ESPHome dashboard.
-4. **The Web-Interface Design (`insane-style.css`) & Custom Components:** The project comes with a custom design for the local web interface and adjusted components.
-   * **Important:** Copy the `insane-style.css` file (from the `webserver/` folder) and the complete `custom_components/` folder (from the `ESPHome/` folder) into exactly the same folder on your server where your `.yaml` file is located (usually `/config/esphome/` or `/homeassistant/esphome/`).
-   * **How do I do that?** Since the standard ESPHome dashboard doesn't offer a direct file upload for these folders, it is best to use an add-on like the **"File editor"**, **"Studio Code Server"**, or a **"Filebrowser"** in Home Assistant. Upload the files there. Only then will the compiler correctly embed the design and the crucial UART routing when flashing!
+4. The Web-Interface Design (`insane-style.css`): The project comes with a custom design for the local web interface. You will find the required file in the downloaded project files in the `webserver/` folder.
+   * **Important:** This CSS file must absolutely be copied into exactly the same folder on your server where your `.yaml` file is located (usually `/config/esphome/` or `/homeassistant/esphome/`).
+   * **How do I do that?** Since the standard ESPHome dashboard doesn't offer a direct file upload for CSS files, it is best to use an add-on like the **"File editor"**, **"Studio Code Server"**, or a **"Filebrowser"** in Home Assistant. Simply navigate to your ESPHome folder there and upload the `insane-style.css` right next to the `insane-sound-system-v5.yaml`. Only then will the compiler correctly embed the design when flashing!
 5. **Activate LEDs and Front Panel (Packages):** In the `insane-sound-system-v5.yaml` file, near the top under `packages:`, you will find configuration blocks for different LED strips (WS2811, WS2814, WS2805) and the optional Front Panel.
    * **LEDs:** Highlight the block corresponding to the LED type you are using and remove the hash (`#`) symbols at the beginning of the lines (Tip: Select the block and press `Ctrl` + `#`). **Only one** LED block can be active at a time!
    * **Front Panel (Optional):** If you are using the front panel extension (OLED & Buttons), remove the hash symbols in the same way before `frontpanel:`, `url:` and `file:`.
