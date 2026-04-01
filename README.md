@@ -83,7 +83,7 @@ Aus Sicherheitsgründen nutzt dieses Projekt ausgelagerte Passwörter.
    web_server_password: "DEIN_WEB_SERVER_PASSWORT"
    ```
 3. Lade die Datei `insane-sound-system-v5.yaml` aus dem Ordner `ESPHome/` in dein ESPHome-Dashboard hoch.
-4. Das Web-Interface Design (`insane-style.css`): Das Projekt bringt ein maßgeschneidertes Design für das lokale Web-Interface mit. Die benötigte Datei findest du in den heruntergeladenen Projektdateien im Ordner `webserver/`. 
+4. Das Web-Interface Design (`insane-style.css`): Das Projekt bringt ein maßgeschneidertes Design für das lokale Web-Interface mit. Die benötigte Datei findest du in den heruntergeladenen Projektdateien im Ordner `webserver/`.
    * **Wichtig:** Diese CSS-Datei muss zwingend in exakt denselben Ordner auf deinem Server kopiert werden, in dem auch deine `.yaml`-Datei liegt (meistens `/config/esphome/` oder `/homeassistant/esphome/`).
    * **Wie mache ich das?** Da das Standard-ESPHome-Dashboard keinen direkten Dateiupload für CSS-Dateien anbietet, nutzt du in Home Assistant am besten ein Add-on wie den **"File editor"**, **"Studio Code Server"** oder einen **"Filebrowser"**. Navigiere dort einfach in deinen ESPHome-Ordner und lade die `insane-style.css` direkt neben die `insane-sound-system-v5.yaml` hoch. Nur so bindet der Compiler das Design beim Flashen korrekt ein!
 5. **LEDs und Front-Panel aktivieren (Packages):** In der `insane-sound-system-v5.yaml` findest du ganz oben unter `packages:` Konfigurationsblöcke für verschiedene LED-Streifen (WS2811, WS2814, WS2805) sowie das optionale Front-Panel.
