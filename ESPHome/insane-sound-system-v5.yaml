@@ -119,6 +119,8 @@ esphome:
           brightness: 50%
       - delay: 5s 
       - script.execute: update_status_led
+      - delay: 2s
+      - button.press: bl_normal_start
 
 esp32:
   board: esp32-s3-devkitc-1
@@ -188,9 +190,6 @@ web_server:
   version: 1
   css_url: ""
   css_include: "insane-style.css"
-  auth:
-    username: !secret web_server_username
-    password: !secret web_server_password
   
 captive_portal:
 
@@ -560,7 +559,7 @@ text_sensor:
   - platform: homeassistant
     id: ha_album_bridge
     entity_id: ${ha_player_id}
-    attribute: media_album
+    attribute: media_album_name
     internal: true
     on_value:
       - if:
