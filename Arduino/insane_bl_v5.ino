@@ -64,6 +64,7 @@ void volume_change_callback(int volume) {
 void setup() {
     // 115200 Baud ist zwingend nötig für ESPHome Kommunikation & das Flashen!
     Serial.begin(115200); 
+    delay(200); // Kurz warten, bis der S3 (ESPHome) bereit ist
     Serial.print("VERSION:");
     Serial.println(firmware_version);
 
