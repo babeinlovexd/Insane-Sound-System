@@ -79,6 +79,8 @@ For security reasons, this project uses externalized passwords.
    wifi_ssid: "YOUR_WIFI_NAME"
    wifi_password: "YOUR_WIFI_PASSWORD"
    ap_password: "YOUR_FALLBACK_HOTSPOT_PASSWORD"
+   web_server_username: "YOUR_WEB_SERVER_USERNAME"
+   web_server_password: "YOUR_WEB_SERVER_PASSWORD"
    ```
 3. Upload the file `insane-sound-system-v5.yaml` from the `ESPHome/` folder to your ESPHome dashboard.
 4. The Web-Interface Design (`insane-style.css`): The project comes with a custom design for the local web interface. You will find the required file in the downloaded project files in the `webserver/` folder.
