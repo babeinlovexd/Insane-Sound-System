@@ -188,6 +188,9 @@ web_server:
   version: 1
   css_url: ""
   css_include: "insane-style.css"
+  auth:
+    username: !secret web_server_username
+    password: !secret web_server_password
   
 captive_portal:
 
