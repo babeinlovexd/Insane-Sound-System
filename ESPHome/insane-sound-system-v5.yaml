@@ -206,6 +206,7 @@ i2c:
   scl: GPIO9  # S3 Pin 15 (Label: GPIO9)
   scan: true
   frequency: 100kHz
+  timeout: 100ms
 
 i2s_audio:
   - id: i2s_bus
