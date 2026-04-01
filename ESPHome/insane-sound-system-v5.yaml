@@ -117,9 +117,6 @@ esphome:
           green: 0%
           blue: 100% 
           brightness: 50%
-      - text_sensor.template.publish:
-          id: bl_version
-          state: "0.0"
       - delay: 5s 
       - script.execute: update_status_led
 
@@ -127,7 +124,7 @@ esp32:
   board: esp32-s3-devkitc-1
   variant: esp32s3
   framework:
-    type: arduino
+    type: esp-idf 
   flash_size: 16MB
 
 external_components:
@@ -179,6 +176,9 @@ wifi:
     ssid: "Insane-Sound Fallback"
     password: !secret ap_password
 
+network:
+  enable_high_performance: false   
+
 stream_server:
   - uart_id: uart_bl
     port: 8888
@@ -190,6 +190,11 @@ web_server:
   css_include: "insane-style.css"
   
 captive_portal:
+
+globals:
+  - id: is_flashing
+    type: bool
+    initial_value: 'false'
 
 # ##############################################################################
 # BUS-SYSTEME (I2C, I2S & UART)
@@ -223,6 +228,7 @@ speaker:
     i2s_audio_id: i2s_bus
     i2s_dout_pin: GPIO17  # S3 Pin 10 (Label: GPIO17 / MTCK)
     channel: stereo
+    use_apll: true
 
   - platform: mixer
     id: insane_mixer
@@ -237,8 +243,10 @@ media_player:
     id: decken_audio
     media_pipeline:
       speaker: media_spk_mixer_input
+      format: FLAC
     announcement_pipeline:
       speaker: announcement_spk_mixer_input
+      format: FLAC
     on_play:
       - switch.turn_on: amp_power
       - script.execute: update_status_led
@@ -248,7 +256,7 @@ media_player:
     on_idle:
       - switch.turn_off: amp_power
       - script.execute: update_status_led
-# ##############################################################################
+#################################
 # BELEUCHTUNG 
 # ##############################################################################
 
@@ -327,6 +335,9 @@ button:
     entity_category: "config"
     icon: "mdi:bluetooth-transfer"
     on_press:
+      - globals.set:
+          id: is_flashing
+          value: 'true'
       - logger.log: "Bringe WROOM in den Bootloader-Modus..."
       # Hardware-Reset Sequenz für den WROOM 
       - switch.turn_off: bl_io0_pin     # IO0 auf LOW (Download Mode)
@@ -344,6 +355,9 @@ button:
     id: bl_normal_start
     icon: "mdi:play"
     on_press:
+      - globals.set:
+          id: is_flashing
+          value: 'false'
       - logger.log: "Starte WROOM normal neu..."
       - switch.turn_on: bl_io0_pin      
       - switch.turn_off: bl_en_pin      
@@ -371,9 +385,7 @@ output:
   - platform: ledc
     pin: GPIO42  # S3 Pin 39 (Label: MTMS / GPIO42)
     id: fan_pwm
-    frequency: 50 Hz 
-    min_power: 0.30
-    zero_means_zero: true 
+    frequency: 25000 Hz 
 
 fan:
   - platform: speed
@@ -661,6 +673,8 @@ interval:
     id: uart_reader
     then:
       - lambda: |-
+          if (id(is_flashing)) return;
+
           static std::string buffer = "";
           while (id(uart_bl).available()) {
             uint8_t byte;
