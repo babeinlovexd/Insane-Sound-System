@@ -366,7 +366,8 @@ class InsaneFlasher(ctk.CTk):
         
         try:
             # Wir nutzen deinen in YAML definierten bl_normal_start Button!
-            requests.post(f"http://{ip}/button/bl_normal_start/press", timeout=3)
+            # Hinweis: Die Web-API erwartet die object_id aus dem Namen "WROOM Normal starten"
+            requests.post(f"http://{ip}/button/wroom_normal_starten/press", timeout=3)
             messagebox.showinfo("Hardware Reset", "⚡ Befehl gesendet!\nDer S3 startet den Bluetooth-Chip (WROOM) jetzt hart neu.")
         except Exception as e:
             messagebox.showerror("Netzwerk Fehler", f"Konnte den Neustart-Befehl nicht senden:\n{e}")
@@ -388,27 +389,26 @@ class InsaneFlasher(ctk.CTk):
         threading.Thread(target=self._fetch_api_data, args=(ip,), daemon=True).start()
 
     def _fetch_api_data(self, ip):
-        def get_state(domain, name):
+        def get_state(domain, object_id):
             try:
-                safe_name = urllib.parse.quote(name)
-                url = f"http://{ip}/{domain}/{safe_name}"
+                url = f"http://{ip}/{domain}/{object_id}"
                 r = requests.get(url, timeout=2).json() # Timeout auf 2s verkürzt
                 return r.get("state", "N/A")
             except: return "Offline"
 
-        # Daten abrufen
-        src = get_state("switch", "Audio Quelle (Intern)")
-        amp = get_state("switch", "Verstärker Power")
-        turbo = get_state("switch", "Insane Turbo Mode")
-        t_amp = get_state("sensor", "Temp Verstärker")
-        t_esp = get_state("sensor", "Temp ESP32 Umgebung")
-        t_pwr = get_state("sensor", "Temp Spannungsregler")
-        bl_stat = get_state("text_sensor", "Wiedergabe Status")
-        bl_song = get_state("text_sensor", "Aktueller Titel")
-        bl_art = get_state("text_sensor", "Aktueller Interpret")
-        fan = get_state("fan", "Gehäuse Lüfter")
-        wifi = get_state("sensor", "WLAN Signal")
-        bl_version = get_state("text_sensor", "BL Firmware Version") # Version holen
+        # Daten abrufen (ESPHome generiert object_ids aus dem 'name' der Komponente)
+        src = get_state("switch", "audio_quelle_intern")
+        amp = get_state("switch", "verstarker_power")
+        turbo = get_state("switch", "insane_turbo_mode")
+        t_amp = get_state("sensor", "temp_verstarker")
+        t_esp = get_state("sensor", "temp_esp32_umgebung")
+        t_pwr = get_state("sensor", "temp_spannungsregler")
+        bl_stat = get_state("text_sensor", "wiedergabe_status")
+        bl_song = get_state("text_sensor", "aktueller_titel")
+        bl_art = get_state("text_sensor", "aktueller_interpret")
+        fan = get_state("fan", "gehause_lufter")
+        wifi = get_state("sensor", "wlan_signal")
+        bl_version = get_state("text_sensor", "bl_firmware_version") # Version holen
 
         import time
         current_time = time.time()
@@ -504,7 +504,7 @@ class InsaneFlasher(ctk.CTk):
             # --- SCHRITT 1: WROOM IN DEN BOOTLOADER ZWINGEN ---
             self.after(0, lambda: self.flash_btn.configure(text="FLASHING..."))
             self.after(0, lambda: self.status_label.configure(text="Schritt 1: Setze WROOM in Flash-Modus...", text_color="orange"))
-            requests.post(f"http://{ip}/button/flash_wroom_btn/press", timeout=5)
+            requests.post(f"http://{ip}/button/wroom_in_flash_modus_setzen/press", timeout=5)
             
             import time
             time.sleep(2) 
@@ -528,7 +528,7 @@ class InsaneFlasher(ctk.CTk):
 
             # --- SCHRITT 3: WROOM NORMAL NEUSTARTEN ---
             self.after(0, lambda: self.status_label.configure(text="Schritt 3: WROOM Neustart...", text_color="orange"))
-            requests.post(f"http://{ip}/button/bl_normal_start/press", timeout=5)
+            requests.post(f"http://{ip}/button/wroom_normal_starten/press", timeout=5)
             
             self.after(0, lambda: self.status_label.configure(text="🚀 Update 100% erfolgreich!", text_color="#2ecc71"))
             self.after(0, lambda: messagebox.showinfo("Insane Sound System", "Der WROOM-Chip wurde erfolgreich geflasht und startet neu!"))
