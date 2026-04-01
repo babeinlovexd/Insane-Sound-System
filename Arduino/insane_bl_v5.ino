@@ -117,17 +117,23 @@ void setup() {
 
 void loop() {
   // Empfängt Steuerbefehle vom S3 direkt über Serial (UART0)
-  if (Serial.available()) {
-    String cmd = Serial.readStringUntil('\n');
-    cmd.trim();
-    if (cmd == "PLAY") a2dp_sink.play();
-    else if (cmd == "PAUSE") a2dp_sink.pause();
-    else if (cmd == "NEXT") a2dp_sink.next();
-    else if (cmd == "PREV") a2dp_sink.previous();
-    else if (cmd.startsWith("SET_VOL:")) {
-      int vol = cmd.substring(8).toInt();
-      a2dp_sink.set_volume(vol);
+  static String buffer = "";
+  while (Serial.available()) {
+    char c = Serial.read();
+    if (c == '\n') {
+      String cmd = buffer;
+      buffer = "";
+      cmd.trim();
+      if (cmd == "PLAY") a2dp_sink.play();
+      else if (cmd == "PAUSE") a2dp_sink.pause();
+      else if (cmd == "NEXT") a2dp_sink.next();
+      else if (cmd == "PREV") a2dp_sink.previous();
+      else if (cmd.startsWith("SET_VOL:")) {
+        int vol = cmd.substring(8).toInt();
+        a2dp_sink.set_volume(vol);
+      }
+    } else if (c != '\r') {
+      buffer += c;
     }
   }
-  delay(10); 
 }
