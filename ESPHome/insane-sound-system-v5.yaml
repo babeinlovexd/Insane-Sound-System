@@ -316,7 +316,7 @@ button:
     icon: "mdi:play-pause"
     on_press:
       - lambda: |-
-          if (id(media_status).state == "Wiedergabe") id(uart_bl).write_str("PAUSE\n");
+          if (id(music_active_bl).state) id(uart_bl).write_str("PAUSE\n");
           else id(uart_bl).write_str("PLAY\n");
 
   - platform: template
