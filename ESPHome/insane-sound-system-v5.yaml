@@ -315,8 +315,13 @@ button:
     icon: "mdi:play-pause"
     on_press:
       - lambda: |-
-          if (id(music_active_bl).state) id(uart_bl).write_str("PAUSE\n");
-          else id(uart_bl).write_str("PLAY\n");
+          if (id(bl_playback_state).state == "PLAYING") {
+            id(uart_bl).write_str("PAUSE\n");
+            id(bl_playback_state).publish_state("PAUSED");
+          } else {
+            id(uart_bl).write_str("PLAY\n");
+            id(bl_playback_state).publish_state("PLAYING");
+          }
 
   - platform: template
     name: "BL Nächster Titel"
@@ -501,6 +506,11 @@ sensor:
 # Metadaten (Universell für WLAN & Bluetooth)
 text_sensor:
   # --- 1. Die universellen, sichtbaren Sensoren ---
+  - platform: template
+    id: bl_playback_state
+    internal: true
+    initial_value: "PAUSED"
+
   - platform: template
     name: "Aktueller Titel"
     id: media_title
@@ -699,10 +709,13 @@ interval:
                 id(media_album).publish_state(line.substr(6));
               } else if (line.find("STATUS:PLAY") == 0) {
                 id(media_status).publish_state("Wiedergabe");
+                id(bl_playback_state).publish_state("PLAYING");
               } else if (line.find("STATUS:PAUSE") == 0) {
                 id(media_status).publish_state("Pause");
+                id(bl_playback_state).publish_state("PAUSED");
               } else if (line.find("STATUS:OFFLINE") == 0) {
                 id(media_status).publish_state("Getrennt");
+                id(bl_playback_state).publish_state("PAUSED");
                 id(media_title).publish_state("Bereit");
                 id(media_artist).publish_state("-");
                 id(bl_version).publish_state("0.0");
