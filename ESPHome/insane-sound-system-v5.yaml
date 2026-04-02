@@ -510,7 +510,6 @@ text_sensor:
   - platform: template
     id: bl_playback_state
     internal: true
-    initial_value: "PAUSED"
 
   - platform: template
     name: "Aktueller Titel"
