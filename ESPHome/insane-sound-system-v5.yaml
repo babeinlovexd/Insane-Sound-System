@@ -106,9 +106,9 @@ esphome:
   friendly_name: "Insane Sound System V5"
   project:
     name: "babeinlovexd.insane_sound_system"
-    version: "5.5"
+    version: "5.5.1"
   on_boot:
-    priority: 800 
+    priority: 100
     then:
       - light.turn_on:
           id: status_led
@@ -126,27 +126,25 @@ esp32:
   board: esp32-s3-devkitc-1
   variant: esp32s3
   framework:
-    type: esp-idf 
+    type: esp-idf
   flash_size: 16MB
 
 external_components:
   - source:
       type: git
       url: https://github.com/babeinlovexd/Insane-Sound-System
-      ref: main
     components: [ stream_server ]
     refresh: 0s
   - source:
       type: git
       url: https://github.com/babeinlovexd/esph-ws2805
-      ref: main
     components: [ ws2805 ]
     refresh: 0s
   - source:
       type: git
       url: https://github.com/babeinlovexd/insane_package_report
     components: [ insane_package_report ]
-    refresh: 1s
+    refresh: 0s
 
 insane_package_report:
 
@@ -231,10 +229,12 @@ speaker:
     i2s_dout_pin: GPIO17  # S3 Pin 10 (Label: GPIO17 / MTCK)
     channel: stereo
     use_apll: true
+    i2s_comm_fmt: stand_msb
 
   - platform: mixer
     id: insane_mixer
     output_speaker: insane_speaker
+    queue_mode: true
     source_speakers:
       - id: media_spk_mixer_input
       - id: announcement_spk_mixer_input
@@ -243,12 +243,21 @@ media_player:
   - platform: speaker
     name: "Insane Sound System"
     id: decken_audio
+    codec_support_enabled: all
     media_pipeline:
       speaker: media_spk_mixer_input
       format: FLAC
+      num_channels: 2
     announcement_pipeline:
       speaker: announcement_spk_mixer_input
       format: FLAC
+      num_channels: 2
+    on_mute:
+      - switch.turn_off: amp_power
+      - script.execute: update_status_led
+    on_unmute:
+      - switch.turn_on: amp_power
+      - script.execute: update_status_led
     on_play:
       - switch.turn_on: amp_power
       - script.execute: update_status_led
@@ -258,6 +267,7 @@ media_player:
     on_idle:
       - switch.turn_off: amp_power
       - script.execute: update_status_led
+
 #################################
 # BELEUCHTUNG 
 # ##############################################################################
