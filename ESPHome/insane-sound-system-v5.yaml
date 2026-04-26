@@ -137,7 +137,7 @@ external_components:
     refresh: 0s
   - source:
       type: git
-      url: https://github.com/babeinlovexd/esph-ws2805
+      url: https://github.com/babeinlovexd/ESPHOME-WS2805
     components: [ ws2805 ]
     refresh: 0s
   - source:
@@ -228,8 +228,8 @@ speaker:
     i2s_audio_id: i2s_bus
     i2s_dout_pin: GPIO17  # S3 Pin 10 (Label: GPIO17 / MTCK)
     channel: stereo
-    use_apll: true
-    i2s_comm_fmt: stand_msb
+    use_apll: false
+    i2s_comm_fmt: stand_i2s
 
   - platform: mixer
     id: insane_mixer
