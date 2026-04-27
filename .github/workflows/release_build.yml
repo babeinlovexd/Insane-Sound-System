@@ -72,3 +72,6 @@ jobs:
           git diff --quiet && git diff --staged --quiet || git commit -m "chore: Update Firmware (.bin) und version.txt auf ${{ env.NEW_VERSION }} [skip ci]"
           
           git push origin HEAD:${{ github.event.repository.default_branch }}
+          
+      - name: 🧹 Aufräumen für saubere Logs
+        run: rm -rf ~/.arduino15/packages || true
