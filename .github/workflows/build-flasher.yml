@@ -1,0 +1,63 @@
+name: Build & Release InsaneFlasher
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch: # Zum manuellen Testen
+
+jobs:
+  build-exe:
+    runs-on: windows-latest # 🪟 ZWINGEND erforderlich, um eine .exe zu bauen!
+    permissions:
+      contents: write # Wichtig für Release-Uploads und Code-Pushes
+    
+    steps:
+      - name: 📥 Repository auschecken
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+
+      - name: 🐍 Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11' # Sehr stabile Version für PyInstaller
+
+      - name: 📦 Abhängigkeiten installieren
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller customtkinter requests esptool zeroconf pillow pyserial
+
+      - name: 🛠️ EXE mit PyInstaller kompilieren
+        # Wir springen in den Ordner, in dem dein Skript und die Logos liegen
+        working-directory: InsaneFlasher/Linux_Mac
+        shell: bash
+        run: |
+          # Führt exakt die Befehle aus deinem build-exe.py Skript aus.
+          # Unter Windows muss bei --add-data ein Semikolon (;) statt einem Doppelpunkt genutzt werden!
+          pyinstaller -y --noconsole --onefile --name=InsaneFlasher --icon=logo.ico --add-data="logo.png;." --add-data="logo.ico;." --hidden-import=serial.urlhandler.protocol_socket --collect-data=esptool InsaneFlasher.py
+
+      - name: 📎 EXE an GitHub Release Assets anhängen
+        # Dieser Schritt läuft nur, wenn ein echtes Release (kein manueller Test) gemacht wird
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: InsaneFlasher/Linux_Mac/dist/InsaneFlasher.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🚀 Aktualisierte EXE zurück ins Repo pushen
+        working-directory: InsaneFlasher
+        shell: bash
+        run: |
+          # Wir kopieren die fertige exe auch in deinen "Windows" Ordner im Repository
+          mkdir -p Windows
+          cp Linux_Mac/dist/InsaneFlasher.exe Windows/InsaneFlasher.exe
+          
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add Windows/InsaneFlasher.exe
+          
+          git diff --quiet && git diff --staged --quiet || git commit -m "chore: Auto-Update InsaneFlasher.exe [skip ci]"
+          git push origin HEAD:${{ github.event.repository.default_branch }}
