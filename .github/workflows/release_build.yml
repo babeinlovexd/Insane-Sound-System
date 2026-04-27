@@ -4,35 +4,29 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 on:
-  workflow_dispatch: # Erlaubt dir weiterhin, den Prozess zum Testen manuell zu starten
+  workflow_dispatch: # Super wichtig zum Testen!
   release:
-    types: [published] # Startet NUR, wenn ein neues Release auf GitHub veröffentlicht wird
+    types: [published]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     
     permissions:
-      contents: write # Wichtig für den automatischen Commit ins Repository
+      contents: write
 
     steps:
       - name: Code vom Haupt-Branch herunterladen
         uses: actions/checkout@v4
         with:
-          # Sehr wichtig bei Releases: Wir müssen den Branch auschecken (z.B. 'main' oder 'master'),
-          # damit der Git-Push am Ende nicht ins Leere läuft, da Releases auf Tags basieren.
-          ref: main 
+          # Erkennt automatisch, ob du 'main' oder 'master' nutzt!
+          ref: ${{ github.event.repository.default_branch }}
 
-      - name: Version aus .ino extrahierten und version.txt aktualisieren
+      - name: Version aus .ino extrahierten
         run: |
-          # Sucht nach der Zeile "String firmware_version = ..." und schneidet den Text zwischen den " " aus
           VERSION=$(grep 'String firmware_version' Arduino/insane_bl_v5.ino | cut -d'"' -f2)
           echo "Gefundene Version im Code: $VERSION"
-          
-          # Sicherstellen, dass der Ordner existiert
           mkdir -p Firmware
-          
-          # Schreibt die gefundene Version in die version.txt (überschreibt alte Inhalte)
           echo "$VERSION" > Firmware/version.txt
 
       - name: Arduino Sketch kompilieren
@@ -49,7 +43,7 @@ jobs:
           cli-compile-flags: |
             - --export-binaries
 
-      - name: Merged Bin finden und in Firmware-Ordner kopieren
+      - name: Merged Bin kopieren
         run: |
           find Arduino/build -name "*.merged.bin" -exec cp {} Firmware/insane_bl_v5.ino.merged.bin \;
 
@@ -58,9 +52,11 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Wir fügen jetzt BEIDE Dateien zum Commit hinzu
           git add Firmware/insane_bl_v5.ino.merged.bin
           git add Firmware/version.txt
           
-          # Prüfen ob sich was geändert hat, dann Committen und Pushen
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-Update: Firmware & version.txt für Release aktualisiert" && git push)
+          # Wir fangen Fehler ab, falls sich die Dateien mal nicht geändert haben sollten
+          git commit -m "Auto-Update: Firmware & version.txt für Release aktualisiert" || echo "Keine Änderungen zum Committen gefunden."
+          
+          # Der wichtigste Teil: Wir zwingen Git, auf den richtigen Haupt-Zweig zu pushen!
+          git push origin HEAD:${{ github.event.repository.default_branch }}
