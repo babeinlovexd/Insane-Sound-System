@@ -1,0 +1,63 @@
+name: Build & Update on Release
+
+on:
+  workflow_dispatch: # Erlaubt dir weiterhin, den Prozess zum Testen manuell zu starten
+  release:
+    types: [published] # Startet NUR, wenn ein neues Release auf GitHub veröffentlicht wird
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write # Wichtig für den automatischen Commit ins Repository
+
+    steps:
+      - name: Code vom Haupt-Branch herunterladen
+        uses: actions/checkout@v4
+        with:
+          # Sehr wichtig bei Releases: Wir müssen den Branch auschecken (z.B. 'main' oder 'master'),
+          # damit der Git-Push am Ende nicht ins Leere läuft, da Releases auf Tags basieren.
+          ref: main 
+
+      - name: Version aus .ino extrahierten und version.txt aktualisieren
+        run: |
+          # Sucht nach der Zeile "String firmware_version = ..." und schneidet den Text zwischen den " " aus
+          VERSION=$(grep 'String firmware_version' Arduino/insane_bl_v5.ino | cut -d'"' -f2)
+          echo "Gefundene Version im Code: $VERSION"
+          
+          # Sicherstellen, dass der Ordner existiert
+          mkdir -p Firmware
+          
+          # Schreibt die gefundene Version in die version.txt (überschreibt alte Inhalte)
+          echo "$VERSION" > Firmware/version.txt
+
+      - name: Arduino Sketch kompilieren
+        uses: arduino/compile-sketches@v1
+        with:
+          fqbn: esp32:esp32:esp32
+          platforms: |
+            - name: esp32:esp32
+              source-url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          libraries: |
+            - name: ESP32-A2DP
+          sketch-paths: |
+            - Arduino/insane_bl_v5.ino
+          cli-compile-flags: |
+            - --export-binaries
+
+      - name: Merged Bin finden und in Firmware-Ordner kopieren
+        run: |
+          find Arduino/build -name "*.merged.bin" -exec cp {} Firmware/insane_bl_v5.ino.merged.bin \;
+
+      - name: Neue Dateien ins Repository pushen
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Wir fügen jetzt BEIDE Dateien zum Commit hinzu
+          git add Firmware/insane_bl_v5.ino.merged.bin
+          git add Firmware/version.txt
+          
+          # Prüfen ob sich was geändert hat, dann Committen und Pushen
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-Update: Firmware & version.txt für Release aktualisiert" && git push)
