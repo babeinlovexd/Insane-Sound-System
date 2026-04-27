@@ -1,5 +1,8 @@
 name: Build & Update on Release
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   workflow_dispatch: # Erlaubt dir weiterhin, den Prozess zum Testen manuell zu starten
   release:
