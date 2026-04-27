@@ -551,28 +551,29 @@ class InsaneFlasher(ctk.CTk):
             
     def check_for_updates(self, local_version):
         try:
-            # 1. Online Version holen (wird jetzt im Hintergrund gecached)
-            online_version = self.online_version
+            # 1. Beide Versionen von unsichtbaren Zeichen bereinigen!
+            online_version = str(self.online_version).strip() if self.online_version else None
+            clean_local = str(local_version).strip()
+            
             if not online_version:
                 raise Exception("Keine Online-Version verfügbar")
             
             # 2. Logik & UI Update
-            if local_version == "N/A" or local_version == "Offline":
+            if clean_local == "N/A" or clean_local == "Offline":
                 self.fw_label.configure(text=f"WROOM Version: Unbekannt (Offline?)", text_color="#888888")
                 self.flash_btn.configure(state="normal", text="FIRMWARE FLASHEN", fg_color="#7a1a1a")
             
-            elif online_version != str(local_version).strip():
-                clean_local = str(local_version).strip()
+            elif online_version != clean_local:
                 self.fw_label.configure(text=f"⚠️ Update verfügbar! (Box: {clean_local} -> Neu: {online_version})", text_color="#f39c12")
                 self.flash_btn.configure(state="normal", text="UPDATE JETZT INSTALLIEREN", fg_color="#e74c3c")
             
             else:
-                clean_local = str(local_version).strip()
                 self.fw_label.configure(text=f"✅ WROOM ist aktuell (Version {clean_local})", text_color="#2ecc71")
+                # Optional: Button deaktivieren, wenn alles aktuell ist (Schutz vor unnötigem Flashen)
                 self.flash_btn.configure(state="disabled", text="KEIN UPDATE NÖTIG", fg_color="#333333")
                 
         except Exception:
-            self.fw_label.configure(text=f"Box: {local_version} | GitHub: Offline", text_color="#888888")
+            self.fw_label.configure(text=f"Box: {str(local_version).strip()} | GitHub: Offline", text_color="#888888")
 
 if __name__ == "__main__":
     app = InsaneFlasher()
