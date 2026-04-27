@@ -70,6 +70,8 @@ jobs:
           git add Firmware/version.txt
           
           git diff --quiet && git diff --staged --quiet || git commit -m "chore: Update Firmware (.bin) und version.txt auf ${{ env.NEW_VERSION }} [skip ci]"
+
+          git pull --rebase origin ${{ github.event.repository.default_branch }}
           
           git push origin HEAD:${{ github.event.repository.default_branch }}
           
