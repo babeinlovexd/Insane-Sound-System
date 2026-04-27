@@ -1,35 +1,27 @@
-name: Build & Update on Release
+name: Build Firmware & Update Version on Release
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 on:
-  workflow_dispatch: # Super wichtig zum Testen!
   release:
     types: [published]
+  workflow_dispatch: 
 
 jobs:
-  build:
+  build-and-update:
     runs-on: ubuntu-latest
-    
     permissions:
       contents: write
 
     steps:
-      - name: Code vom Haupt-Branch herunterladen
+      - name: 📥 Repository auschecken (Haupt-Branch)
         uses: actions/checkout@v4
         with:
-          # Erkennt automatisch, ob du 'main' oder 'master' nutzt!
           ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0 
 
-      - name: Version aus .ino extrahierten
-        run: |
-          VERSION=$(grep 'String firmware_version' Arduino/insane_bl_v5.ino | cut -d'"' -f2)
-          echo "Gefundene Version im Code: $VERSION"
-          mkdir -p Firmware
-          echo "$VERSION" > Firmware/version.txt
-
-      - name: Arduino Sketch kompilieren
+      - name: 🛠️ Arduino Sketch kompilieren
         uses: arduino/compile-sketches@v1
         with:
           fqbn: esp32:esp32:esp32
@@ -44,20 +36,31 @@ jobs:
           cli-compile-flags: |
             - --export-binaries
 
-      - name: Merged Bin kopieren
+      - name: 🏷️ Release-Tag oder Version auslesen
         run: |
+          VERSION="${{ github.event.release.tag_name }}"
+          if [ -z "$VERSION" ]; then
+            VERSION=$(grep 'String firmware_version' Arduino/insane_bl_v5.ino | cut -d'"' -f2)
+          fi
+          VERSION=${VERSION#v} # 'v' entfernen, falls das Release z.B. v5.5.0 heißt
+          echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: 📂 Firmware und Version aktualisieren
+        run: |
+          mkdir -p Firmware
+
           find Arduino/build -name "*.merged.bin" -exec cp {} Firmware/insane_bl_v5.ino.merged.bin \;
 
-      - name: Neue Dateien ins Repository pushen
+          echo "${{ env.NEW_VERSION }}" > Firmware/version.txt
+
+      - name: 🚀 Änderungen committen und pushen
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
+
           git add Firmware/insane_bl_v5.ino.merged.bin
           git add Firmware/version.txt
+
+          git diff --quiet && git diff --staged --quiet || git commit -m "chore: Update Firmware (.bin) und version.txt auf ${{ env.NEW_VERSION }} [skip ci]"
           
-          # Wir fangen Fehler ab, falls sich die Dateien mal nicht geändert haben sollten
-          git commit -m "Auto-Update: Firmware & version.txt für Release aktualisiert" || echo "Keine Änderungen zum Committen gefunden."
-          
-          # Der wichtigste Teil: Wir zwingen Git, auf den richtigen Haupt-Zweig zu pushen!
           git push origin HEAD:${{ github.event.repository.default_branch }}
