@@ -5,7 +5,7 @@
  * PINOUT: BCK=27, LRCK=25, DATA=26, STATUS=14, RX0=3, TX0=1
  * ======================================================================================
  */
-String firmware_version = "5.5.0";
+String firmware_version = "5.5.5";
 #include "BluetoothA2DPSink.h"
 #include "ESP_I2S.h"
 
@@ -19,6 +19,13 @@ const uint8_t I2S_SDOUT = 26;
 I2SClass i2s;
 BluetoothA2DPSink a2dp_sink(i2s);
 
+// --- VARIABLEN FÜR AUTO-DISCONNECT ---
+unsigned long pauseStartTime = 0;
+bool isConnected = false;
+bool isPlaying = false;
+const unsigned long DISCONNECT_TIMEOUT = 300000; // 300.000 ms = 5 Minuten
+// ------------------------------------------
+
 // ======================================================================================
 // 1. HARDWARE MUX TRIGGER & STATUS
 // ======================================================================================
@@ -26,19 +33,27 @@ void play_status_callback(esp_avrc_playback_stat_t playback) {
   if (playback == ESP_AVRC_PLAYBACK_PLAYING) {
     digitalWrite(STATUS_PIN, HIGH);
     Serial.println("STATUS:PLAY"); 
+    isPlaying = true; // Status merken
   } else {
     digitalWrite(STATUS_PIN, LOW);  
     Serial.println("STATUS:PAUSE");
+    isPlaying = false; // Status merken
+    pauseStartTime = millis(); // Timer starten bei Pause/Stop
   }
 }
 
 void connection_state_changed(esp_a2d_connection_state_t state, void *ptr) {
   if (state == ESP_A2D_CONNECTION_STATE_CONNECTED) {
     Serial.println("SYS_MSG: VERBUNDEN!");
+    isConnected = true;  // Status merken
+    isPlaying = false;   // Beim Verbinden spielt noch nichts
+    pauseStartTime = millis(); // Timer starten, falls man sich verbindet aber nichts abspielt
   } else if (state == ESP_A2D_CONNECTION_STATE_DISCONNECTED) {
     Serial.println("SYS_MSG: GETRENNT.");
     digitalWrite(STATUS_PIN, LOW); 
     Serial.println("STATUS:OFFLINE");
+    isConnected = false; // Status merken
+    isPlaying = false;
   }
 }
 
@@ -69,8 +84,7 @@ void setup() {
     Serial.println(firmware_version);
 
     pinMode(STATUS_PIN, OUTPUT);
-    digitalWrite(STATUS_PIN, LOW); 
-
+    digitalWrite(STATUS_PIN, LOW);
     i2s.setPins(I2S_SCK, I2S_WS, I2S_SDOUT);
     if (!i2s.begin(I2S_MODE_STD, 44100, I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_STEREO, I2S_STD_SLOT_BOTH)) {
       Serial.println("SYS_MSG: Failed to initialize I2S!");
@@ -87,6 +101,16 @@ void setup() {
 }
 
 void loop() {
+  // --- Auto-Disconnect Timer prüfen ---
+  if (isConnected && !isPlaying) {
+    if (millis() - pauseStartTime > DISCONNECT_TIMEOUT) {
+      Serial.println("SYS_MSG: Auto-Disconnect wegen Inaktivität.");
+      a2dp_sink.disconnect();
+      isConnected = false; // Verhindert mehrfaches Auslösen, bis der Callback es bestätigt
+    }
+  }
+  // -----------------------------------------
+
   // Empfängt Steuerbefehle vom S3 direkt über Serial (UART0)
   static String buffer = "";
   while (Serial.available()) {
