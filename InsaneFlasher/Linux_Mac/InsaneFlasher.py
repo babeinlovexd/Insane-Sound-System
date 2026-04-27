@@ -552,14 +552,14 @@ class InsaneFlasher(ctk.CTk):
     def check_for_updates(self, local_version):
         try:
             # 1. Beide Versionen von unsichtbaren Zeichen bereinigen!
-            online_version = str(self.online_version).strip() if self.online_version else None
-            clean_local = str(local_version).strip()
+            online_version = str(self.online_version).replace("v", "").strip() if self.online_version else None
+            clean_local = str(local_version).replace("v", "").replace("\r", "").replace("\n", "").strip()
             
             if not online_version:
                 raise Exception("Keine Online-Version verfügbar")
             
             # 2. Logik & UI Update
-            if clean_local == "N/A" or clean_local == "Offline":
+            if clean_local == "N/A" or clean_local == "Offline" or clean_local == "0.0":
                 self.fw_label.configure(text=f"WROOM Version: Unbekannt (Offline?)", text_color="#888888")
                 self.flash_btn.configure(state="normal", text="FIRMWARE FLASHEN", fg_color="#7a1a1a")
             
