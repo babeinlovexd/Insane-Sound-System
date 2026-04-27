@@ -37,7 +37,7 @@ jobs:
             - name: esp32:esp32
               source-url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
           libraries: |
-            - name: ESP32-A2DP
+            - source-url: https://github.com/pschatzmann/ESP32-A2DP.git
           sketch-paths: |
             - Arduino/insane_bl_v5.ino
           cli-compile-flags: |
