@@ -6,7 +6,7 @@ env:
 on:
   release:
     types: [published]
-  workflow_dispatch: 
+  workflow_dispatch: # Zum manuellen Testen
 
 jobs:
   build-and-update:
@@ -21,6 +21,13 @@ jobs:
           ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 0 
 
+      - name: 📂 Arduino-Ordnerstruktur fixen
+        run: |
+          # Arduino CLI zwingt uns dazu, dass der Ordner exakt wie die Datei heißt.
+          # Wir bauen das hier kurz temporär für den Compiler zusammen:
+          mkdir -p insane_bl_v5
+          cp Arduino/insane_bl_v5.ino insane_bl_v5/insane_bl_v5.ino
+
       - name: 🛠️ Arduino Sketch kompilieren
         uses: arduino/compile-sketches@v1
         with:
@@ -32,7 +39,7 @@ jobs:
             - name: ESP32-A2DP
               source-url: https://github.com/pschatzmann/ESP32-A2DP/archive/refs/heads/main.zip
           sketch-paths: |
-            - Arduino/insane_bl_v5.ino
+            - insane_bl_v5/insane_bl_v5.ino # <-- Hier greifen wir auf den neuen Ordner zu
           cli-compile-flags: |
             - --export-binaries
 
@@ -42,25 +49,26 @@ jobs:
           if [ -z "$VERSION" ]; then
             VERSION=$(grep 'String firmware_version' Arduino/insane_bl_v5.ino | cut -d'"' -f2)
           fi
-          VERSION=${VERSION#v} # 'v' entfernen, falls das Release z.B. v5.5.0 heißt
+          VERSION=${VERSION#v}
           echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: 📂 Firmware und Version aktualisieren
         run: |
           mkdir -p Firmware
-
-          find Arduino/build -name "*.merged.bin" -exec cp {} Firmware/insane_bl_v5.ino.merged.bin \;
-
+          
+          # Die neu kompilierte Firmware aus dem temporären Build-Ordner kopieren
+          find insane_bl_v5/build -name "*.merged.bin" -exec cp {} Firmware/insane_bl_v5.ino.merged.bin \;
+          
           echo "${{ env.NEW_VERSION }}" > Firmware/version.txt
 
       - name: 🚀 Änderungen committen und pushen
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
+          
           git add Firmware/insane_bl_v5.ino.merged.bin
           git add Firmware/version.txt
-
+          
           git diff --quiet && git diff --staged --quiet || git commit -m "chore: Update Firmware (.bin) und version.txt auf ${{ env.NEW_VERSION }} [skip ci]"
           
           git push origin HEAD:${{ github.event.repository.default_branch }}
