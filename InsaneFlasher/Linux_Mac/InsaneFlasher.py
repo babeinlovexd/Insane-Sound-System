@@ -561,13 +561,14 @@ class InsaneFlasher(ctk.CTk):
                 self.fw_label.configure(text=f"WROOM Version: Unbekannt (Offline?)", text_color="#888888")
                 self.flash_btn.configure(state="normal", text="FIRMWARE FLASHEN", fg_color="#7a1a1a")
             
-            elif online_version != local_version:
-                self.fw_label.configure(text=f"⚠️ Update verfügbar! (Box: {local_version} -> Neu: {online_version})", text_color="#f39c12")
+            elif online_version != str(local_version).strip():
+                clean_local = str(local_version).strip()
+                self.fw_label.configure(text=f"⚠️ Update verfügbar! (Box: {clean_local} -> Neu: {online_version})", text_color="#f39c12")
                 self.flash_btn.configure(state="normal", text="UPDATE JETZT INSTALLIEREN", fg_color="#e74c3c")
             
             else:
-                self.fw_label.configure(text=f"✅ WROOM ist aktuell (Version {local_version})", text_color="#2ecc71")
-                # Optional: Button deaktivieren, wenn alles aktuell ist (Schutz vor unnötigem Flashen)
+                clean_local = str(local_version).strip()
+                self.fw_label.configure(text=f"✅ WROOM ist aktuell (Version {clean_local})", text_color="#2ecc71")
                 self.flash_btn.configure(state="disabled", text="KEIN UPDATE NÖTIG", fg_color="#333333")
                 
         except Exception:
