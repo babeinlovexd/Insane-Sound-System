@@ -552,8 +552,8 @@ class InsaneFlasher(ctk.CTk):
     def check_for_updates(self, local_version):
         try:
             # 1. Beide Versionen von unsichtbaren Zeichen bereinigen!
-            online_version = str(self.online_version).replace("v", "").strip() if self.online_version else None
-            clean_local = str(local_version).replace("v", "").replace("\r", "").replace("\n", "").strip()
+            online_version = str(self.online_version).replace("v", "").replace("V", "").replace("\x00", "").strip() if self.online_version else None
+            clean_local = str(local_version).replace("v", "").replace("V", "").replace("\r", "").replace("\n", "").replace("\x00", "").strip()
             
             if not online_version:
                 raise Exception("Keine Online-Version verfügbar")
