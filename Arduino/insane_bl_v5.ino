@@ -86,10 +86,13 @@ void setup() {
     pinMode(STATUS_PIN, OUTPUT);
     digitalWrite(STATUS_PIN, LOW);
     i2s.setPins(I2S_SCK, I2S_WS, I2S_SDOUT);
-    if (!i2s.begin(I2S_MODE_STD, 44100, I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_STEREO, I2S_STD_SLOT_BOTH)) {
+    // if (!i2s.begin(I2S_MODE_STD, 44100, I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_STEREO, I2S_STD_SLOT_BOTH)) {
+    //   Serial.println("SYS_MSG: Failed to initialize I2S!");
+    // }
+    if (!i2s.begin(I2S_MODE_STD, 44100, I2S_DATA_BIT_WIDTH_32BIT, I2S_SLOT_MODE_STEREO, I2S_STD_SLOT_BOTH)) {
       Serial.println("SYS_MSG: Failed to initialize I2S!");
     }
-    
+  
     a2dp_sink.set_avrc_metadata_callback(avrc_metadata_callback);
     a2dp_sink.set_avrc_rn_playstatus_callback(play_status_callback);
     a2dp_sink.set_on_connection_state_changed(connection_state_changed);
