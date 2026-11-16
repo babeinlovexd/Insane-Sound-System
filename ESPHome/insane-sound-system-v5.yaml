@@ -106,7 +106,7 @@ esphome:
   friendly_name: "Insane Sound System V5"
   project:
     name: "babeinlovexd.insane_sound_system"
-    version: "5.5.1"
+    version: "5.5.9"
   on_boot:
     priority: 100
     then:
