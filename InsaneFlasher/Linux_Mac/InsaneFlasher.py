@@ -49,7 +49,7 @@ def get_firmware_path():
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
-FIRMWARE_URL = "https://raw.githubusercontent.com/babeinlovexd/Insane-Sound-System/main/Firmware/insane_bl_v5.ino.merged.bin"
+FIRMWARE_URL = "https://github.com/babeinlovexd/Insane-Sound-System/releases/latest/download/insane_bl_v5.ino.merged.bin"
 GITHUB_URL = "https://github.com/babeinlovexd"
 UPDATE_CHECK_INTERVAL = 3600 # Sekunden
 
@@ -417,7 +417,7 @@ class InsaneFlasher(ctk.CTk):
         if current_time - self.last_update_check > UPDATE_CHECK_INTERVAL:
             self.last_update_check = current_time
             try:
-                VERSION_URL = "https://raw.githubusercontent.com/babeinlovexd/Insane-Sound-System/main/Firmware/version.txt"
+                VERSION_URL = "https://github.com/babeinlovexd/Insane-Sound-System/releases/latest/download/version.txt"
                 self.online_version = requests.get(VERSION_URL, timeout=3).text.strip()
             except:
                 self.online_version = None

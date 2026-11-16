@@ -1,0 +1,136 @@
+name: Build and release
+'on':
+  push:
+    branches:
+    - '**'
+    tags:
+    - v*
+  pull_request: null
+  workflow_dispatch: null
+permissions:
+  contents: read
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v7
+    - uses: actions/setup-python@v7
+      with:
+        python-version: '3.12'
+    - name: Check version and package source
+      run: python ci/release.py --package
+    - uses: actions/upload-artifact@v7
+      with:
+        name: source
+        path: release-output/*
+        if-no-files-found: error
+  esphome:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+    - uses: actions/checkout@v7
+    - uses: actions/setup-python@v7
+      with:
+        python-version: '3.12'
+    - run: python -m pip install esphome==2026.10.2
+    - name: Compile with CI placeholders
+      run: python ci/esphome_check.py "ESPHome/insane-sound-system-v5.yaml"
+  build-flasher:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v7
+    - name: 🐍 Python einrichten
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.11'
+    - name: 📦 Abhängigkeiten installieren
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller customtkinter requests esptool zeroconf pillow pyserial
+    - name: 🛠️ EXE mit PyInstaller kompilieren
+      working-directory: InsaneFlasher/Linux_Mac
+      shell: bash
+      run: |
+        # Führt exakt die Befehle aus deinem build-exe.py Skript aus.
+        # Unter Windows muss bei --add-data ein Semikolon (;) statt einem Doppelpunkt genutzt werden!
+        pyinstaller -y --noconsole --onefile --name=InsaneFlasher --icon=logo.ico --add-data="logo.png;." --add-data="logo.ico;." --hidden-import=serial.urlhandler.protocol_socket --collect-data=esptool InsaneFlasher.py
+    - uses: actions/upload-artifact@v7
+      with:
+        name: build-flasher
+        path: InsaneFlasher/Linux_Mac/dist/InsaneFlasher.exe
+        if-no-files-found: error
+    timeout-minutes: 45
+  release-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+    - name: 📂 Arduino-Ordnerstruktur fixen
+      run: |
+        # Arduino CLI zwingt uns dazu, dass der Ordner exakt wie die Datei heißt.
+        # Wir bauen das hier kurz temporär für den Compiler zusammen:
+        mkdir -p insane_bl_v5
+        cp Arduino/insane_bl_v5.ino insane_bl_v5/insane_bl_v5.ino
+    - name: 🛠️ Arduino Sketch kompilieren
+      uses: arduino/compile-sketches@v1
+      with:
+        fqbn: esp32:esp32:esp32
+        platforms: |
+          - name: esp32:esp32
+            source-url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
+        libraries: |
+          - name: ESP32-A2DP
+            source-url: https://github.com/pschatzmann/ESP32-A2DP/archive/refs/heads/main.zip
+        sketch-paths: |
+          - insane_bl_v5/insane_bl_v5.ino # <-- Hier greifen wir auf den neuen Ordner zu
+        cli-compile-flags: |
+          - --export-binaries
+    - name: Read repository version
+      run: echo "NEW_VERSION=$(cat VERSION)" >> "$GITHUB_ENV"
+    - name: 📂 Firmware und Version aktualisieren
+      run: |
+        mkdir -p Firmware
+
+        # Die neu kompilierte Firmware aus dem temporären Build-Ordner kopieren
+        find insane_bl_v5/build -name "*.merged.bin" -exec cp {} Firmware/insane_bl_v5.ino.merged.bin \;
+
+        echo "${{ env.NEW_VERSION }}" > Firmware/version.txt
+    - uses: actions/upload-artifact@v7
+      with:
+        name: release-build
+        path: |-
+          Firmware/insane_bl_v5.ino.merged.bin
+          Firmware/version.txt
+        if-no-files-found: error
+    timeout-minutes: 45
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs:
+    - source
+    - esphome
+    - build-flasher
+    - release-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v7
+    - uses: actions/download-artifact@v8
+      with:
+        path: release-output
+        merge-multiple: true
+    - name: Hash complete downloads
+      working-directory: release-output
+      run: |-
+        find . -maxdepth 1 -type f ! -name SHA256SUMS.txt -printf '%f\0' | sort -z | xargs -0 sha256sum > SHA256SUMS.txt
+        sha256sum -c SHA256SUMS.txt
+    - name: Publish complete release
+      env:
+        GH_TOKEN: ${{ github.token }}
+        GH_REPO: ${{ github.repository }}
+        TAG: ${{ github.ref_name }}
+      run: gh release create "$TAG" release-output/* --verify-tag --title "${GITHUB_REPOSITORY#*/} $TAG" --notes-file RELEASE-NOTES.md
